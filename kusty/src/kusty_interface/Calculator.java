@@ -54,7 +54,6 @@ import kusty_data.RecipeSet;
 import kusty_data.Subject;
 
 
-//useless comment
 public class Calculator{
 	
 	public static void main(String[] args) throws IOException {

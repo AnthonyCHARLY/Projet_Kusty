@@ -14,15 +14,31 @@ public class test {
 		//Recipe test = new Recipe("test",10,1);
 		//test.addPeriode(2);
 		//System.out.println(Arrays.toString(test.getPeriodes()));
-		Map<Integer,String> test = new HashMap<Integer,String>();
-		test.put(1, "1");
-		test.put(2, "2");
-		test.put(3, "3");
-		String l[] = new String[test.size()];
-		int i = 0;
-		for(String s : test.values()) {
-		System.out.println(s);
+		List<String> l = new ArrayList<String>();
+		l.add("bonjour");
+		l.add("ponjour");
+		l.add("blnjour");
+		l.add("bobjour");
+		l.add("bonkour");
+		l.add("bonjpur");
+		l.add("bonjoyr");
+		l.add("bonjoue");
+		
+		String search  = "bonjo";
+		int cm = search.length();
+		for(String s : l) {
+			int count = search.length();
+			for(int i = 0 ; i < search.length() ; i++) {
+				if(search.charAt(i) == s.charAt(i)) {
+					count--;
+				}
+			}
+			if(count == 0) {
+				System.out.println(s);
+			}
+			
 		}
+		
 	}
 
 }

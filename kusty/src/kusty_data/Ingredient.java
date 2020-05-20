@@ -1,12 +1,15 @@
 package kusty_data;
 
-public class Ingredient {
+import java.io.Serializable;
+
+public class Ingredient implements Serializable{
 	
 	private static int nextIngredientId=1;
 	private int id;
 	
 	
 	private String name;
+	private String species;
 	private float prize;
 	private float proteins;
 	private float carbohydrates;
@@ -20,11 +23,13 @@ public class Ingredient {
 	private float eReg;
 	
 
-	public Ingredient(String name, float prize, float eReg, float proteins, float carbohydrates, float lipids, float sugars,
-			float dietaryFiber, float agSat, float agMonoInsat, float agPolyInsat) {
+	public Ingredient(String species, String name, float eReg, float proteins, float carbohydrates, float lipids, float sugars,
+			float dietaryFiber, float agSat, float agMonoInsat, float agPolyInsat, float prize) {
 		super();
 		this.id = Ingredient.nextIngredientId++;
+		
 		this.name = name;
+		this.species = species;
 		this.prize = prize;
 		this.proteins = proteins;
 		this.carbohydrates = carbohydrates;
@@ -47,6 +52,9 @@ public class Ingredient {
 		return name;
 	}
 	
+	public String getSpecies() {
+		return species;
+	}
 	
 	public float getPrize() {
 		return prize;
@@ -102,6 +110,9 @@ public class Ingredient {
 		this.name = name;
 	}
 	
+	public void setSpecies(String species) {
+		this.species = species;
+	}
 	
 	public void setPrize(float prize) {
 		this.prize = prize;

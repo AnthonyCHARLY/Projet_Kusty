@@ -19,7 +19,7 @@ public class Subject implements Serializable{
 	private int project;
 	private int morpho;
 	private int regime;
-	
+	//bonjours
 	
 	private boolean[] alergies;
 	private boolean[] sportPeriodes;

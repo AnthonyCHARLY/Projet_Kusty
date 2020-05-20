@@ -44,10 +44,12 @@ import javax.swing.table.DefaultTableModel;
 
 import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
+import kusty_data.Ingredient;
 import kusty_data.IngredientSet;
 import kusty_data.Kudata;
 import kusty_data.RecipeSet;
@@ -60,7 +62,7 @@ public class Calculator{
 		
 		Map<String,Subject> subSet = new HashMap<String,Subject>();
 		RecipeSet recSet = new RecipeSet();
-		IngredientSet ingSet = new IngredientSet();
+		Map<String,Ingredient> ingSet = new HashMap<String, Ingredient>();
 		
 		JFrame kulcalculator = new JFrame();
 		kulcalculator.setTitle("KulCalculator");
@@ -173,6 +175,7 @@ public class Calculator{
 		JMenuItem item2_2 = new JMenuItem("Répertoire");
 		
 		JMenuItem item3_1 = new JMenuItem("Actualiser la base de donner");
+		JMenuItem item3_2 = new JMenuItem("Base de données globale");
 		
 		
 		
@@ -306,6 +309,9 @@ public class Calculator{
 		
 		
 		button2.add(item2_2);
+		/////////////////////////////////////////////////////////////////
+		//SEARCH PANEL
+		/////////////////////////////////////////////////////////////////
 		item2_2.addActionListener(new ActionListener() {
 
 			@Override
@@ -314,19 +320,57 @@ public class Calculator{
 			}
 			
 		});
+		/////////////////////////////////////////////////////////////////
+		//SEARCH PANEL
+		/////////////////////////////////////////////////////////////////
+		
 		
 		
 		button3.add(item3_1);
+		/////////////////////////////////////////////////////////////////
+		//ACTUALIZE INGREDIENTS
+		/////////////////////////////////////////////////////////////////
 		item3_1.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fc = new JFileChooser("C:/Users/achar/Desktop/kuku/kudatas");
 				int returnVal = fc.showOpenDialog(item3_1);
-				System.out.println(fc.getSelectedFile().getName());
+				System.out.println(fc.getSelectedFile().getPath());
+				try {
+					IngredientsReader(fc.getSelectedFile().getPath(),ingSet);
+				} catch (IOException e1) {
+					// TODO Auto-generated catch block
+					e1.printStackTrace();
+				}
+				
 			}
 			
 		});
+		/////////////////////////////////////////////////////////////////
+		//ACTUALIZE INGREDIENTS
+		/////////////////////////////////////////////////////////////////
+		
+		
+		
+		button3.add(item3_2);
+		/////////////////////////////////////////////////////////////////
+		//GLOBAL INGREDIENTS PANEL
+		/////////////////////////////////////////////////////////////////
+		item3_2.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				GlobalIngredientsPanel(ingSet);
+			}
+			
+		});
+		/////////////////////////////////////////////////////////////////
+		//GLOBAL INGREDIENTS PANEL
+		/////////////////////////////////////////////////////////////////
+		
+		
 		
 		menu.add(button1);
 		menu.add(button2);
@@ -340,6 +384,10 @@ public class Calculator{
 		/////////////////////////////////////////////////////////////////
 		
 	}
+	
+	
+	
+	
 	
 	/////////////////////////////////////////////////////////////////
 	//NEW CLIENTS
@@ -632,6 +680,8 @@ public class Calculator{
 	
 	
 	
+	
+	
 	/////////////////////////////////////////////////////////////////
 	//CLIENTS DATAS
 	/////////////////////////////////////////////////////////////////
@@ -757,18 +807,125 @@ public class Calculator{
 	
 	
 	/////////////////////////////////////////////////////////////////
+	//GLOBAL INGREDIENTS PANEL
+	/////////////////////////////////////////////////////////////////
+	public static void GlobalIngredientsPanel(Map<String,Ingredient> ingSet) {
+		JFrame globalIngredientsFrame = new JFrame();
+		globalIngredientsFrame.setSize(600, 800);
+		globalIngredientsFrame.setVisible(true);
+		globalIngredientsFrame.setLocationRelativeTo(null);
+		globalIngredientsFrame.setResizable(false);
+		globalIngredientsFrame.setAlwaysOnTop(true);
+		
+		if(ingSet.size() > 0) {
+			JPanel globalIngredientPanel = new JPanel();
+			globalIngredientPanel.setLayout(new BoxLayout(globalIngredientPanel, BoxLayout.PAGE_AXIS));
+		
+			String ingredients[] =  new String[ingSet.size()];
+			int i = 0;
+			for(Ingredient ingredient : ingSet.values()) { ingredients[i] = ingredient.getName(); i++;}
+			JList<String> ingredientsNames = new JList<String>(ingredients);
+			JPanel p1 = new JPanel();
+			p1.setLayout(new BorderLayout());
+			JScrollPane pane = new JScrollPane(ingredientsNames);
+			p1.add(pane);
+			
+			JTextField searchBar = new JTextField();
+			searchBar.setColumns(25);
+			JButton search = new JButton("Rechercher");
+			JButton ajouterKulist = new JButton("Ajouter à list util");
+			
+			JPanel p2 = new JPanel();
+			p2.setLayout(new FlowLayout());
+			p2.add(searchBar);
+			p2.add(search);
+			p2.add(ajouterKulist);
+			
+			
+			search.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				if(searchBar.getText().length() > 0) {
+					Map<String,Ingredient> searchedIngredients = new HashMap<String,Ingredient>();
+					p1.setVisible(false);
+					
+					for(String s : ingSet.keySet()) {
+						int count = searchBar.getText().length();
+						for(int i = 0 ; i < searchBar.getText().length() ; i++) {
+							if(s.length() >= searchBar.getText().length() && s.charAt(i) == searchBar.getText().charAt(i)) {
+								count--;
+							}
+						}
+						if(count == 0) {
+							searchedIngredients.put(ingSet.get(s).getName(), ingSet.get(s));
+						}
+					}
+					
+					String searchedIngredientsNames[] =  new String[searchedIngredients.size()];
+					int i = 0;
+					for(Ingredient ingredient : searchedIngredients.values()) { searchedIngredientsNames[i] = ingredient.getName(); i++;}
+					JList<String> searchedIngredientsNamesJlist = new JList<String>(searchedIngredientsNames);
+					JScrollPane searchedPane = new JScrollPane(searchedIngredientsNamesJlist);
+					p1.remove(p1.getComponent(0));
+					p1.add(searchedPane);
+					
+					p1.setVisible(true);
+				}
+			}
+			
+			});
+			
+			globalIngredientPanel.add(p1);
+			globalIngredientPanel.add(p2);
+			
+			globalIngredientsFrame.setContentPane(globalIngredientPanel);
+			
+		}
+			
+	}
+	/////////////////////////////////////////////////////////////////
+	//GLOBAL INGREDIENTS PANEL
+	/////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////
 	//INGREDIENTS READER
 	/////////////////////////////////////////////////////////////////
-	public static void IngredientsReader() throws IOException {
-		FileInputStream fileIn = new FileInputStream(new File("C:/Users/achar/desktop/kuku/datas.xlsx"));
+	@SuppressWarnings("deprecation")
+	public static void IngredientsReader(String path, Map<String,Ingredient> ingSet) throws IOException {
+		FileInputStream fileIn = new FileInputStream(new File(path));
 		Workbook workbook = new XSSFWorkbook(fileIn);
-		Sheet dataSheet = workbook.getSheetAt(3);
-		Cell cell = dataSheet.getRow(1).getCell(2);
-		System.out.println(cell.getStringCellValue());
+		Sheet dataSheet = workbook.getSheetAt(2);
+		int listInd[]  = {4,7,8,9,10,11,12,13,14,15,16};
+		for(int i = 1 ; i < 2808 ; i++) {
+			String[] dataRow = new String[listInd.length];
+			for(int j = 0 ; j < listInd.length ; j++ ) {
+				Cell curCell = dataSheet.getRow(i).getCell(listInd[j]);
+				if(curCell.getCellType() == CellType.NUMERIC) {
+					double res = curCell.getNumericCellValue();
+					dataRow[j] = "" + res;
+				}
+				else {
+					dataRow[j] = (curCell.getStringCellValue()).replace(",", ".");
+				}
+			}
+			
+			Ingredient newIng = new Ingredient(dataRow[0],dataRow[1],Float.valueOf(dataRow[2]),Float.valueOf(dataRow[3]),Float.valueOf(dataRow[4]),Float.valueOf(dataRow[5]),Float.valueOf(dataRow[6]),Float.valueOf(dataRow[7]),Float.valueOf(dataRow[8]),Float.valueOf(dataRow[9]),Float.valueOf(dataRow[10]),0);
+			ingSet.put(dataRow[1], newIng);
+				
+		}
 	}
 	/////////////////////////////////////////////////////////////////
 	//INGREDIENTS READER
 	/////////////////////////////////////////////////////////////////
+	
+	
+	
+	
 	
 }
 

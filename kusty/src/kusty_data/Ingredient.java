@@ -41,6 +41,26 @@ public class Ingredient implements Serializable{
 		this.agPolyInsat = agPolyInsat;
 		this.eReg = eReg;
 	}
+	
+	
+	
+	public void actualizeAllDatas(String species, String name, float eReg, float proteins, float carbohydrates, float lipids, float sugars,
+			float dietaryFiber, float agSat, float agMonoInsat, float agPolyInsat, float prize) {
+		
+		this.name = name;
+		this.species = species;
+		this.prize = prize;
+		this.proteins = proteins;
+		this.carbohydrates = carbohydrates;
+		this.lipids = lipids;
+		this.sugars = sugars;
+		this.dietaryFiber = dietaryFiber;
+		this.agSat = agSat;
+		this.agMonoInsat = agMonoInsat;
+		this.agPolyInsat = agPolyInsat;
+		this.eReg = eReg;
+		
+	}
 
 
 	public int getId() {

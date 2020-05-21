@@ -34,6 +34,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
+import javax.swing.JScrollBar;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.JTextField;
@@ -63,6 +64,7 @@ public class Calculator{
 		Map<String,Subject> subSet = new HashMap<String,Subject>();
 		RecipeSet recSet = new RecipeSet();
 		Map<String,Ingredient> ingSet = new HashMap<String, Ingredient>();
+		Map<String,Ingredient> kuIngSet = new HashMap<String, Ingredient>();
 		
 		JFrame kulcalculator = new JFrame();
 		kulcalculator.setTitle("KulCalculator");
@@ -176,7 +178,7 @@ public class Calculator{
 		
 		JMenuItem item3_1 = new JMenuItem("Actualiser la base de donner");
 		JMenuItem item3_2 = new JMenuItem("Base de données globale");
-		
+		JMenuItem item3_3 = new JMenuItem("KuBase de données");
 		
 		
 		button1.add(item1_1);
@@ -336,7 +338,6 @@ public class Calculator{
 			public void actionPerformed(ActionEvent e) {
 				JFileChooser fc = new JFileChooser("C:/Users/achar/Desktop/kuku/kudatas");
 				int returnVal = fc.showOpenDialog(item3_1);
-				System.out.println(fc.getSelectedFile().getPath());
 				try {
 					IngredientsReader(fc.getSelectedFile().getPath(),ingSet);
 				} catch (IOException e1) {
@@ -362,13 +363,15 @@ public class Calculator{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				GlobalIngredientsPanel(ingSet);
+				GlobalIngredientsPanel(ingSet,kuIngSet);
 			}
 			
 		});
 		/////////////////////////////////////////////////////////////////
 		//GLOBAL INGREDIENTS PANEL
 		/////////////////////////////////////////////////////////////////
+		
+		button3.add(item3_3);
 		
 		
 		
@@ -809,7 +812,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	//GLOBAL INGREDIENTS PANEL
 	/////////////////////////////////////////////////////////////////
-	public static void GlobalIngredientsPanel(Map<String,Ingredient> ingSet) {
+	public static void GlobalIngredientsPanel(Map<String,Ingredient> ingSet, Map<String,Ingredient> kuIngSet) {
 		JFrame globalIngredientsFrame = new JFrame();
 		globalIngredientsFrame.setSize(600, 800);
 		globalIngredientsFrame.setVisible(true);
@@ -828,20 +831,24 @@ public class Calculator{
 			JPanel p1 = new JPanel();
 			p1.setLayout(new BorderLayout());
 			JScrollPane pane = new JScrollPane(ingredientsNames);
+			Kudata.setIngredientsCurrentList(ingredientsNames);
 			p1.add(pane);
 			
 			JTextField searchBar = new JTextField();
 			searchBar.setColumns(25);
 			JButton search = new JButton("Rechercher");
-			JButton ajouterKulist = new JButton("Ajouter à list util");
+			JButton ajouterKulist = new JButton("Ajouter KuDB");
 			
 			JPanel p2 = new JPanel();
 			p2.setLayout(new FlowLayout());
 			p2.add(searchBar);
+			
+			
+			
 			p2.add(search);
-			p2.add(ajouterKulist);
-			
-			
+			/////////////////////////////////////////////////////////////////
+			//RESEARCH BAR
+			/////////////////////////////////////////////////////////////////
 			search.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -867,14 +874,39 @@ public class Calculator{
 					for(Ingredient ingredient : searchedIngredients.values()) { searchedIngredientsNames[i] = ingredient.getName(); i++;}
 					JList<String> searchedIngredientsNamesJlist = new JList<String>(searchedIngredientsNames);
 					JScrollPane searchedPane = new JScrollPane(searchedIngredientsNamesJlist);
+					Kudata.setIngredientsCurrentList(searchedIngredientsNamesJlist);
 					p1.remove(p1.getComponent(0));
 					p1.add(searchedPane);
-					
 					p1.setVisible(true);
 				}
 			}
 			
 			});
+			/////////////////////////////////////////////////////////////////
+			//RESEARCH BAR
+			/////////////////////////////////////////////////////////////////
+			
+			
+			
+			p2.add(ajouterKulist);
+			/////////////////////////////////////////////////////////////////
+			//ADD KULIST
+			/////////////////////////////////////////////////////////////////
+			ajouterKulist.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					Ingredient curIng = ingSet.get(Kudata.getIngredientsCurrentList().getSelectedValue());
+					Kudata.setGlobalIngToKuing(curIng);
+					KuIngPanel(ingSet, false,kuIngSet);
+				}
+			});
+			/////////////////////////////////////////////////////////////////
+			//ADD KULIST
+			/////////////////////////////////////////////////////////////////
+			
+			
 			
 			globalIngredientPanel.add(p1);
 			globalIngredientPanel.add(p2);
@@ -927,6 +959,168 @@ public class Calculator{
 	
 	
 	
+	/////////////////////////////////////////////////////////////////
+	//KUING ADD PANEL
+	/////////////////////////////////////////////////////////////////
+	public static void KuIngPanel(Map<String,Ingredient> ingSet, boolean isNewIngredient, Map<String,Ingredient> kuIngSet) {
+		JFrame kuingFrame = new JFrame();
+		kuingFrame.setTitle("KuIngrédients");
+		kuingFrame.setSize(470,250);
+		kuingFrame.setLocationRelativeTo(null);
+		kuingFrame.setResizable(false);
+		kuingFrame.setAlwaysOnTop(true);
+		kuingFrame.setVisible(true);
+		
+		JPanel kuingPanel = new JPanel();
+		kuingPanel.setLayout(new FlowLayout(FlowLayout.LEADING));
+		
+		
+		JLabel label_1 = new JLabel("Nom :");
+		JLabel label_2 = new JLabel("Prix :");
+		JLabel label_3 = new JLabel("Protéines :");
+		JLabel label_4 = new JLabel("Glucides :");
+		JLabel label_5 = new JLabel("Lipides :");
+		JLabel label_6 = new JLabel("Sucres :");
+		JLabel label_7 = new JLabel("Fibres Alimentaires :");
+		JLabel label_8 = new JLabel("AgSat :");
+		JLabel label_9 = new JLabel("AgMonoInsat :");
+		JLabel label_10 = new JLabel("AgPolyInsat :");
+		JLabel label_11 = new JLabel("eReg :");
+		
+		List<String> species = new ArrayList<String>();
+		for(Ingredient i : ingSet.values()) { if(!species.contains(i.getSpecies())) { species.add(i.getSpecies()); }}
+		String[] speciesNames = new String[species.size()];
+		int i = 0;
+		for(String s : species) { speciesNames[i] = s; i++; }
+		JComboBox speciesBox = new JComboBox(speciesNames);
+		
+		JTextField name = new JTextField();
+		name.setColumns(25);
+		
+		JTextField price = new JTextField();
+		price.setColumns(3);
+	
+		JTextField prot = new JTextField();
+		prot.setColumns(3);
+	
+		JTextField gluc = new JTextField();
+		gluc.setColumns(3);
+	
+		JTextField lip = new JTextField();
+		lip.setColumns(3);
+		
+		JTextField sucres = new JTextField();
+		sucres.setColumns(3);
+		
+		JTextField fibAl = new JTextField();
+		fibAl.setColumns(3);
+		
+		JTextField agSat = new JTextField();
+		agSat.setColumns(3);
+		
+		JTextField agMono = new JTextField();
+		agMono.setColumns(3);
+		
+		JTextField agPoly = new JTextField();
+		agPoly.setColumns(3);
+		
+		JTextField eReg = new JTextField();
+		eReg.setColumns(3);
+		
+		if(!isNewIngredient) {
+			Ingredient curIng = ingSet.get(Kudata.getGlobalIngToKuing());
+			name.setText(Kudata.getGlobalIngToKuing());
+			speciesBox.setSelectedIndex(species.indexOf(curIng.getSpecies()));
+			price.setText("" + curIng.getPrize());
+			prot.setText("" + curIng.getProteins());
+			gluc.setText("" + curIng.getCarbohydrates());
+			lip.setText("" + curIng.getLipids());
+			sucres.setText("" + curIng.getSugars());
+			fibAl.setText("" + curIng.getDietaryFiber());
+			agSat.setText("" + curIng.getAgSat());
+			agMono.setText("" + curIng.getAgMonoInsat());
+			agPoly.setText("" + curIng.getAgPolyInsat());
+			eReg.setText("" + curIng.getEReg());
+		}
+		
+		kuingPanel.add(label_1);
+		kuingPanel.add(name);
+		kuingPanel.add(speciesBox);
+		kuingPanel.add(label_2);
+		kuingPanel.add(price);
+		kuingPanel.add(label_3);
+		kuingPanel.add(prot);
+		kuingPanel.add(label_4);
+		kuingPanel.add(gluc);
+		kuingPanel.add(label_5);
+		kuingPanel.add(lip);
+		kuingPanel.add(label_6);
+		kuingPanel.add(sucres);
+		kuingPanel.add(label_7);
+		kuingPanel.add(fibAl);
+		kuingPanel.add(label_8);
+		kuingPanel.add(agSat);
+		kuingPanel.add(label_9);
+		kuingPanel.add(agMono);
+		kuingPanel.add(label_10);
+		kuingPanel.add(agPoly);
+		kuingPanel.add(label_11);
+		kuingPanel.add(eReg);
+		
+		JButton ok = new JButton("OK");
+		kuingPanel.add(ok);
+		ok.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				
+				String newSpecies = (String)speciesBox.getSelectedItem();
+				
+				String newName = name.getName();
+				
+				float newPrice = Float.parseFloat(price.getText());
+				
+				float newProt = Float.parseFloat(prot.getText());
+				
+				float newGluc = Float.parseFloat(gluc.getText());
+				
+				float newLip = Float.parseFloat(lip.getText());
+				
+				float newSucres = Float.parseFloat(sucres.getText());
+				
+				float newFibAl = Float.parseFloat(fibAl.getText());
+				
+				float newAgSat = Float.parseFloat(agSat.getText());
+				
+				float newAgMono = Float.parseFloat(agMono.getText());
+				
+				float newAgPoly = Float.parseFloat(agPoly.getText());
+				
+				float newEReg = Float.parseFloat(eReg.getText());
+				
+				if(!isNewIngredient) {
+					Ingredient curIng = ingSet.get(Kudata.getGlobalIngToKuing());
+					curIng.actualizeAllDatas(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
+					kuIngSet.put(newName, curIng);
+				}
+				else {
+					Ingredient curIng = new Ingredient(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
+					kuIngSet.put(newName, curIng);
+				}
+				kuingFrame.dispose();
+			}
+			
+		});
+		
+		kuingFrame.setContentPane(kuingPanel);
+		
+		
+		
+	}
+	/////////////////////////////////////////////////////////////////
+	//KUING ADD PANEL
+	/////////////////////////////////////////////////////////////////
 }
 
 

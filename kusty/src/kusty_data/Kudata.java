@@ -5,10 +5,15 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.swing.JList;
+
 public class Kudata {
 	
 	private static String localPath;
 	private static String currentClient;
+	private static String globalIngToKuing;
+	
+	private static JList<String> ingredientsCurrentList;
 	
 	private static List<String> activities = new ArrayList<String>() {{add("Base");add("Loisir");add("Renforcement musculaire");add("Prise de force");add("Endurance");add("Haut-niveau");add("Marathonoien");}};
 	private static Map<String,Float> NAPMap = new HashMap<String,Float>(){{put("Base",(float)1.1);put("Loisir",(float)1.2);put("Renforcement musculaire",(float)1.3);put("Prise de force",(float)1.4);put("Endurance",(float)1.4);put("Haut-niveau",(float)1.5);put("Marathonoien",(float)1.5);}};
@@ -33,6 +38,8 @@ public class Kudata {
 	
 	private static List<String> regimes = new ArrayList<String>() {{add("aucun");add("Végétarien");add("Vegan");}};
 	
+	
+	
 	public static void setLocalPath(String newLocalPath) {
 		localPath = newLocalPath;
 	}
@@ -41,12 +48,31 @@ public class Kudata {
 		currentClient = sub.getName() + " " + sub.getFirstName();
 	}
 	
+	public static void setGlobalIngToKuing(Ingredient ing) {
+		globalIngToKuing = ing.getName();
+	}
+	
+	public static void setIngredientsCurrentList(JList<String> ingJList) {
+		ingredientsCurrentList = ingJList;
+	}
+	
+	
+	
+	
 	public static String getLocalPath() {
 		return localPath;
 	}
 	
 	public static String getCurrentClient() {
 		return currentClient;
+	}
+	
+	public static String getGlobalIngToKuing() {
+		return globalIngToKuing;
+	}
+	
+	public static JList<String> getIngredientsCurrentList(){
+		return ingredientsCurrentList;
 	}
 	
 	public static List<String> getActivitiesList(){

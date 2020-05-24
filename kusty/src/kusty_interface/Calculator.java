@@ -64,7 +64,8 @@ public class Calculator{
 		Map<String,Subject> subSet = new HashMap<String,Subject>();
 		RecipeSet recSet = new RecipeSet();
 		Map<String,Ingredient> ingSet = new HashMap<String, Ingredient>();
-		Map<String,Ingredient> kuIngSet = new HashMap<String, Ingredient>();
+		List<String> kuIngSet = new ArrayList<String>();
+		
 		
 		JFrame kulcalculator = new JFrame();
 		kulcalculator.setTitle("KulCalculator");
@@ -371,8 +372,24 @@ public class Calculator{
 		//GLOBAL INGREDIENTS PANEL
 		/////////////////////////////////////////////////////////////////
 		
-		button3.add(item3_3);
 		
+		
+		button3.add(item3_3);
+		/////////////////////////////////////////////////////////////////
+		//GLOBAL INGREDIENTS PANEL
+		/////////////////////////////////////////////////////////////////
+		item3_3.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				KuIngredientPanel(kuIngSet, ingSet);
+			}
+			
+		});
+		/////////////////////////////////////////////////////////////////
+		//GLOBAL INGREDIENTS PANEL
+		/////////////////////////////////////////////////////////////////
 		
 		
 		menu.add(button1);
@@ -812,7 +829,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	//GLOBAL INGREDIENTS PANEL
 	/////////////////////////////////////////////////////////////////
-	public static void GlobalIngredientsPanel(Map<String,Ingredient> ingSet, Map<String,Ingredient> kuIngSet) {
+	public static void GlobalIngredientsPanel(Map<String,Ingredient> ingSet, List<String> kuIngSet) {
 		JFrame globalIngredientsFrame = new JFrame();
 		globalIngredientsFrame.setSize(600, 800);
 		globalIngredientsFrame.setVisible(true);
@@ -925,6 +942,100 @@ public class Calculator{
 	
 	
 	/////////////////////////////////////////////////////////////////
+	//KUINGREDIENT PANEL
+	/////////////////////////////////////////////////////////////////
+	public static void KuIngredientPanel(List<String> kuIngSet, Map<String,Ingredient> ingSet) {
+		JFrame kuIngredientsFrame = new JFrame();
+		kuIngredientsFrame.setSize(600, 800);
+		kuIngredientsFrame.setVisible(true);
+		kuIngredientsFrame.setLocationRelativeTo(null);
+		kuIngredientsFrame.setResizable(false);
+		kuIngredientsFrame.setAlwaysOnTop(true);
+		
+		if(kuIngSet.size() > 0) {
+			JPanel kuIngredientPanel = new JPanel();
+			kuIngredientPanel.setLayout(new BoxLayout(kuIngredientPanel, BoxLayout.PAGE_AXIS));
+			
+			JPanel p1 = new JPanel();
+			p1.setLayout(new FlowLayout());
+			
+			JPanel p2 = new JPanel();
+			p2.setLayout(new BorderLayout());
+			
+			String ingredientsNames[] = new String[kuIngSet.size()];
+			int i = 0;
+			for(String ingName : kuIngSet) { ingredientsNames[i] = ingName; i++; }
+			JList<String> kuIngredientsNames = new JList<String>(ingredientsNames);
+			JScrollPane kuIngScrollPane = new JScrollPane(kuIngredientsNames);
+			
+			p2.add(kuIngScrollPane);
+			
+			List<String> species = new ArrayList<String>();
+			species.add("-");
+			for(String ing : kuIngSet) { 
+				if(!species.contains((String)ingSet.get(ing).getSpecies())) {
+					species.add(ingSet.get(ing).getSpecies()); 
+					}
+				}
+			String[] speciesNames = new String[species.size()];
+			int j = 0;
+			for(String s : species) { speciesNames[j] = s; j++; }
+			JComboBox speciesBox = new JComboBox(speciesNames);
+			
+			JButton search = new JButton("Rechercher");
+			
+			p1.add(speciesBox);
+			
+			p1.add(search);
+			/////////////////////////////////////////////////////////////////
+			//SPECIES RESEARCH
+			/////////////////////////////////////////////////////////////////
+			search.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					if(speciesBox.getSelectedItem() != "-") {
+						p2.setVisible(false);
+					
+						String selectedSpecies = (String)speciesBox.getSelectedItem();
+						List<String> searchedIngList = new ArrayList<String>();
+						for(String i : kuIngSet) { if(ingSet.get(i).getSpecies() == selectedSpecies) { searchedIngList.add(i);  } }
+						String searchedIngredientsNames[] = new String[searchedIngList.size()];
+						int i = 0;
+						for(String ing : searchedIngList) { searchedIngredientsNames[i] = ing; i++; }
+						JList<String> searchedIngredients = new JList<String>(searchedIngredientsNames);
+						JScrollPane searchedPane = new JScrollPane(searchedIngredients);
+					
+						p2.remove(p2.getComponent(0));
+						p2.add(searchedPane);
+					
+						p2.setVisible(true);
+					}
+					
+				}
+				
+			});
+			/////////////////////////////////////////////////////////////////
+			//SPECIES RESEARCH
+			/////////////////////////////////////////////////////////////////
+			
+			kuIngredientPanel.add(p1);
+			kuIngredientPanel.add(p2);
+			
+			kuIngredientsFrame.setContentPane(kuIngredientPanel);
+			
+		}
+	}
+	/////////////////////////////////////////////////////////////////
+	//KUINGREDIENT PANEL
+	/////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////
 	//INGREDIENTS READER
 	/////////////////////////////////////////////////////////////////
 	@SuppressWarnings("deprecation")
@@ -962,7 +1073,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	//KUING ADD PANEL
 	/////////////////////////////////////////////////////////////////
-	public static void KuIngPanel(Map<String,Ingredient> ingSet, boolean isNewIngredient, Map<String,Ingredient> kuIngSet) {
+	public static void KuIngPanel(Map<String,Ingredient> ingSet, boolean isNewIngredient, List<String> kuIngSet) {
 		JFrame kuingFrame = new JFrame();
 		kuingFrame.setTitle("KuIngrédients");
 		kuingFrame.setSize(470,250);
@@ -1077,7 +1188,7 @@ public class Calculator{
 				
 				String newSpecies = (String)speciesBox.getSelectedItem();
 				
-				String newName = name.getName();
+				String newName = name.getText();
 				
 				float newPrice = Float.parseFloat(price.getText());
 				
@@ -1100,14 +1211,17 @@ public class Calculator{
 				float newEReg = Float.parseFloat(eReg.getText());
 				
 				if(!isNewIngredient) {
-					Ingredient curIng = ingSet.get(Kudata.getGlobalIngToKuing());
-					curIng.actualizeAllDatas(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
-					kuIngSet.put(newName, curIng);
+					ingSet.get(Kudata.getGlobalIngToKuing()).actualizeAllDatas(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
+					kuIngSet.add(newName);
 				}
 				else {
 					Ingredient curIng = new Ingredient(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
-					kuIngSet.put(newName, curIng);
+					ingSet.put(newName, curIng);
+					kuIngSet.add(newName);
 				}
+				System.out.println(newName);
+				System.out.println("" + kuIngSet.size());
+				System.out.println("" + ingSet.size());
 				kuingFrame.dispose();
 			}
 			

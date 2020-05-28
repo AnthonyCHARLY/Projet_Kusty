@@ -53,6 +53,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import kusty_data.Ingredient;
 import kusty_data.IngredientSet;
 import kusty_data.Kudata;
+import kusty_data.Recipe;
 import kusty_data.RecipeSet;
 import kusty_data.Subject;
 
@@ -62,9 +63,82 @@ public class Calculator{
 	public static void main(String[] args) throws IOException {
 		
 		Map<String,Subject> subSet = new HashMap<String,Subject>();
-		RecipeSet recSet = new RecipeSet();
+		Map<String, Recipe> recSet = new HashMap<String,Recipe>();
 		Map<String,Ingredient> ingSet = new HashMap<String, Ingredient>();
 		List<String> kuIngSet = new ArrayList<String>();
+		
+		
+		
+		try {
+			FileInputStream fis = new FileInputStream("globalIngSave.txt");
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			ingSet.clear();
+			while(fis.available() != 0) {
+				try {
+					Ingredient ing = (Ingredient) ois.readObject();
+					ingSet.put(ing.getName(), ing);
+				}
+				catch (ClassNotFoundException e1){
+					e1.printStackTrace();
+				}
+			}
+			ois.close();
+		}
+		catch (FileNotFoundException e1){
+			e1.printStackTrace();
+		}
+		catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		
+		try {
+			FileInputStream fis2 = new FileInputStream("kuIngSave.txt");
+			ObjectInputStream ois2 = new ObjectInputStream(fis2);
+			kuIngSet.clear();
+			while(fis2.available() != 0) {
+				try {
+					String kuIng = (String) ois2.readObject();
+					kuIngSet.add(kuIng);
+				}
+				catch (ClassNotFoundException e1){
+					e1.printStackTrace();
+				}
+			}
+			ois2.close();
+		}
+		catch (FileNotFoundException e1){
+			e1.printStackTrace();
+		}
+		catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		
+		try {
+			FileInputStream fis3 = new FileInputStream("recSave.txt");
+			ObjectInputStream ois3 = new ObjectInputStream(fis3);
+			recSet.clear();
+			while(fis3.available() != 0) {
+				try {
+					Recipe recipe = (Recipe) ois3.readObject();
+					recSet.put(recipe.getName(),recipe);
+				}
+				catch (ClassNotFoundException e1){
+					e1.printStackTrace();
+				}
+			}
+			ois3.close();
+		}
+		catch (FileNotFoundException e1){
+			e1.printStackTrace();
+		}
+		catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
+		
+		
 		
 		
 		JFrame kulcalculator = new JFrame();
@@ -167,8 +241,8 @@ public class Calculator{
 		/////////////////////////////////////////////////////////////////
 		JMenu button1 = new JMenu("Fichier");
 		JMenu button2 = new JMenu("Clients");
-		JMenu button3 = new JMenu("Ingredients");
-		JMenu button4 = new JMenu("Recette");
+		JMenu button3 = new JMenu("Ingrédients");
+		JMenu button4 = new JMenu("Recettes");
 		
 		JMenuItem item1_1 = new JMenuItem("Ouvrir");
 		JMenuItem item1_2 = new JMenuItem("Enregistrer");
@@ -177,9 +251,11 @@ public class Calculator{
 		JMenuItem item2_1 = new JMenuItem("Nouveau");
 		JMenuItem item2_2 = new JMenuItem("Répertoire");
 		
-		JMenuItem item3_1 = new JMenuItem("Actualiser la base de donner");
+		JMenuItem item3_1 = new JMenuItem("Actualiser la base de données");
 		JMenuItem item3_2 = new JMenuItem("Base de données globale");
 		JMenuItem item3_3 = new JMenuItem("KuBase de données");
+		
+		JMenuItem item4_1 = new JMenuItem("Base de données Recettes");
 		
 		
 		button1.add(item1_1);
@@ -197,10 +273,10 @@ public class Calculator{
 				try {
 					FileInputStream fis = new FileInputStream(Kudata.getLocalPath());
 					ObjectInputStream ois = new ObjectInputStream(fis);
+					subSet.clear();
 					while (fis.available() != 0) {
 						try {
 							Subject sub = (Subject) ois.readObject();
-							subSet.clear();
 							tab.setVisible(false);
 							tab2.setVisible(false);
 							subSet.put(sub.getName() + " " + sub.getFirstName(), sub);
@@ -217,6 +293,7 @@ public class Calculator{
 				catch (IOException e1) {
 					e1.printStackTrace();
 				}
+				
 			}
 			
 		});
@@ -236,12 +313,62 @@ public class Calculator{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				try {
-				FileOutputStream fos = new FileOutputStream(Kudata.getLocalPath());
-				ObjectOutputStream oos = new ObjectOutputStream(fos);
-				for(Subject s : subSet.values()) {
-					oos.writeObject(s);
+					FileOutputStream fos = new FileOutputStream(Kudata.getLocalPath());
+					ObjectOutputStream oos = new ObjectOutputStream(fos);
+					for(Subject s : subSet.values()) {
+						oos.writeObject(s);
+					}
+					oos.close();
 				}
-				oos.close();
+				catch(FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				catch(IOException e2) {
+					e2.printStackTrace();
+				}
+				
+				
+				
+				try {
+					FileOutputStream fos2 = new FileOutputStream("globalIngSave.txt");
+					ObjectOutputStream oos2 = new ObjectOutputStream(fos2);
+					for(Ingredient i : ingSet.values()) {
+						oos2.writeObject(i);
+					}
+					oos2.close();
+				}
+				catch(FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				catch(IOException e2) {
+					e2.printStackTrace();
+				}
+				
+				
+				
+				try {
+					FileOutputStream fos3 = new FileOutputStream("kuIngSave.txt");
+					ObjectOutputStream oos3 = new ObjectOutputStream(fos3);
+					for(String s : kuIngSet) {
+						oos3.writeObject(s);
+					}
+					oos3.close();
+				}
+				catch(FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				catch(IOException e2) {
+					e2.printStackTrace();
+				}
+				
+				
+				try {
+					FileOutputStream fos4 = new FileOutputStream("recSave.txt");
+					ObjectOutputStream oos4 = new ObjectOutputStream(fos4);
+					for(Recipe r : recSet.values()) {
+						oos4.writeObject(r);
+					}
+					oos4.close();
 				}
 				catch(FileNotFoundException e1) {
 					e1.printStackTrace();
@@ -284,6 +411,55 @@ public class Calculator{
 					catch(IOException e2) {
 						e2.printStackTrace();
 					}
+				
+				
+				try {
+					FileOutputStream fos2 = new FileOutputStream("globalIngSave.txt");
+					ObjectOutputStream oos2 = new ObjectOutputStream(fos2);
+					for(Ingredient i : ingSet.values()) {
+						oos2.writeObject(i);
+					}
+					oos2.close();
+				}
+				catch(FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				catch(IOException e2) {
+					e2.printStackTrace();
+				}
+				
+				
+				
+				try {
+					FileOutputStream fos3 = new FileOutputStream("kuIngSave.txt");
+					ObjectOutputStream oos3 = new ObjectOutputStream(fos3);
+					for(String s : kuIngSet) {
+						oos3.writeObject(s);
+					}
+					oos3.close();
+				}
+				catch(FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				catch(IOException e2) {
+					e2.printStackTrace();
+				}
+				
+				
+				try {
+					FileOutputStream fos4 = new FileOutputStream("recSave.txt");
+					ObjectOutputStream oos4 = new ObjectOutputStream(fos4);
+					for(Recipe r : recSet.values()) {
+						oos4.writeObject(r);
+					}
+					oos4.close();
+				}
+				catch(FileNotFoundException e1) {
+					e1.printStackTrace();
+				}
+				catch(IOException e2) {
+					e2.printStackTrace();
+				}
 			}
 			
 		});
@@ -376,7 +552,7 @@ public class Calculator{
 		
 		button3.add(item3_3);
 		/////////////////////////////////////////////////////////////////
-		//GLOBAL INGREDIENTS PANEL
+		//KUINGREDIENTS PANEL
 		/////////////////////////////////////////////////////////////////
 		item3_3.addActionListener(new ActionListener() {
 
@@ -388,9 +564,27 @@ public class Calculator{
 			
 		});
 		/////////////////////////////////////////////////////////////////
-		//GLOBAL INGREDIENTS PANEL
+		//KUINGREDIENTS PANEL
 		/////////////////////////////////////////////////////////////////
 		
+		
+		
+		button4.add(item4_1);
+		/////////////////////////////////////////////////////////////////
+		//RECIPES DATA BASE
+		/////////////////////////////////////////////////////////////////
+		item4_1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				RecipesPanel(ingSet,kuIngSet,recSet);
+			}
+			
+		});
+		/////////////////////////////////////////////////////////////////
+		//RECIPES DATA BASE
+		/////////////////////////////////////////////////////////////////
 		
 		menu.add(button1);
 		menu.add(button2);
@@ -915,8 +1109,10 @@ public class Calculator{
 				public void actionPerformed(ActionEvent e) {
 					// TODO Auto-generated method stub
 					Ingredient curIng = ingSet.get(Kudata.getIngredientsCurrentList().getSelectedValue());
-					Kudata.setGlobalIngToKuing(curIng);
-					KuIngPanel(ingSet, false,kuIngSet);
+					if(!kuIngSet.contains(curIng.getName())) {
+						Kudata.setGlobalIngToKuing(curIng);
+						KuIngPanel(ingSet, false,kuIngSet,false);
+					}
 				}
 			});
 			/////////////////////////////////////////////////////////////////
@@ -962,10 +1158,14 @@ public class Calculator{
 			JPanel p2 = new JPanel();
 			p2.setLayout(new BorderLayout());
 			
+			JPanel p3 = new JPanel();
+			p3.setLayout(new FlowLayout());
+			
 			String ingredientsNames[] = new String[kuIngSet.size()];
 			int i = 0;
 			for(String ingName : kuIngSet) { ingredientsNames[i] = ingName; i++; }
 			JList<String> kuIngredientsNames = new JList<String>(ingredientsNames);
+			Kudata.setKuIngredientsCurrentList(kuIngredientsNames);
 			JScrollPane kuIngScrollPane = new JScrollPane(kuIngredientsNames);
 			
 			p2.add(kuIngScrollPane);
@@ -1005,6 +1205,7 @@ public class Calculator{
 						int i = 0;
 						for(String ing : searchedIngList) { searchedIngredientsNames[i] = ing; i++; }
 						JList<String> searchedIngredients = new JList<String>(searchedIngredientsNames);
+						Kudata.setKuIngredientsCurrentList(searchedIngredients);
 						JScrollPane searchedPane = new JScrollPane(searchedIngredients);
 					
 						p2.remove(p2.getComponent(0));
@@ -1020,8 +1221,52 @@ public class Calculator{
 			//SPECIES RESEARCH
 			/////////////////////////////////////////////////////////////////
 			
+			JButton modifier = new JButton("Modifier");
+			JButton supprimer = new JButton("Supprimer");
+			
+			p3.add(modifier);
+			/////////////////////////////////////////////////////////////////
+			//MOD KUING
+			/////////////////////////////////////////////////////////////////
+			modifier.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
+					Kudata.setGlobalIngToKuing(curIng);
+					KuIngPanel(ingSet, false,kuIngSet,true);
+				}
+				
+			});
+			/////////////////////////////////////////////////////////////////
+			//MOD KUING
+			/////////////////////////////////////////////////////////////////
+			
+			
+			p3.add(supprimer);
+			/////////////////////////////////////////////////////////////////
+			//DEL KUING
+			/////////////////////////////////////////////////////////////////
+			supprimer.addActionListener(new ActionListener() {
+
+				@Override
+				public void actionPerformed(ActionEvent e) {
+					// TODO Auto-generated method stub
+					Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
+					kuIngSet.remove(curIng.getName());
+					KuIngredientPanel(kuIngSet,ingSet);
+					kuIngredientsFrame.dispose();
+				}
+				
+			});
+			/////////////////////////////////////////////////////////////////
+			//DEL KUING
+			/////////////////////////////////////////////////////////////////
+			
 			kuIngredientPanel.add(p1);
 			kuIngredientPanel.add(p2);
+			kuIngredientPanel.add(p3);
 			
 			kuIngredientsFrame.setContentPane(kuIngredientPanel);
 			
@@ -1073,7 +1318,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	//KUING ADD PANEL
 	/////////////////////////////////////////////////////////////////
-	public static void KuIngPanel(Map<String,Ingredient> ingSet, boolean isNewIngredient, List<String> kuIngSet) {
+	public static void KuIngPanel(Map<String,Ingredient> ingSet, boolean isNewIngredient, List<String> kuIngSet, boolean isModification) {
 		JFrame kuingFrame = new JFrame();
 		kuingFrame.setTitle("KuIngrédients");
 		kuingFrame.setSize(470,250);
@@ -1212,7 +1457,9 @@ public class Calculator{
 				
 				if(!isNewIngredient) {
 					ingSet.get(Kudata.getGlobalIngToKuing()).actualizeAllDatas(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
-					kuIngSet.add(newName);
+					if(!isModification) {
+						kuIngSet.add(newName);
+					}
 				}
 				else {
 					Ingredient curIng = new Ingredient(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
@@ -1234,6 +1481,103 @@ public class Calculator{
 	}
 	/////////////////////////////////////////////////////////////////
 	//KUING ADD PANEL
+	/////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////
+	//RECIPE DATABASE
+	/////////////////////////////////////////////////////////////////
+	public static void RecipesPanel(Map<String,Ingredient> ingSet, List<String> kuIngSet, Map<String,Recipe> recSet) {
+		JFrame recipeFrame = new JFrame();
+		recipeFrame.setSize(450, 650);
+		recipeFrame.setVisible(true);
+		recipeFrame.setLocationRelativeTo(null);
+		recipeFrame.setResizable(false);
+		recipeFrame.setAlwaysOnTop(true);
+		
+		JPanel recipePanel = new JPanel();
+		recipePanel.setLayout(new BoxLayout(recipePanel, BoxLayout.PAGE_AXIS));
+		
+		if(recSet.size() > 0) {
+		
+			String recipes[] = new String[recSet.size()];
+			int i = 0;
+			for(Recipe recipe : recSet.values()) { recipes[i] = recipe.getName(); i++;}
+			JList<String> recipesNames = new JList<String>(recipes);
+			JPanel p1 = new JPanel();
+			p1.setLayout(new BorderLayout());
+			JScrollPane pane = new JScrollPane(recipesNames);
+			p1.add(pane);
+			recipePanel.add(p1);
+			
+			recipePanel.add(p1);
+		}
+		
+		JPanel p2 = new JPanel();
+		p2.setLayout(new FlowLayout());
+			
+		JButton nouveau = new JButton("Nouveau");
+		JButton supr = new JButton("Supprimer");
+		JButton modifier = new JButton("Modifier");
+
+		p2.add(nouveau);
+		nouveau.addActionListener(new ActionListener(){
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				NewRecipePanel(ingSet,kuIngSet,recSet,true);
+			}
+		
+		});
+		
+		p2.add(supr);
+		supr.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				Recipe rec = recSet.get(Kudata.getRecipesCurrentJList().getSelectedValue());
+				recSet.remove(rec.getName());
+				RecipesPanel(ingSet,kuIngSet,recSet);
+				recipeFrame.dispose();
+			}
+			
+		});
+		
+		p2.add(modifier);
+		modifier.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				NewRecipePanel(ingSet,kuIngSet,recSet,false);
+			}
+			
+		});
+		
+		recipePanel.add(p2);
+		
+		recipeFrame.setContentPane(recipePanel);
+	}
+	/////////////////////////////////////////////////////////////////
+	//RECIPE DATABASE
+	/////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////
+	//NEW RECIPE PANEL
+	/////////////////////////////////////////////////////////////////
+	public static void NewRecipePanel(Map<String,Ingredient> ingSet, List<String> kuIngSet, Map<String,Recipe> recSet, boolean isNewRecipe) {
+		
+	}
+	/////////////////////////////////////////////////////////////////
+	//NEW RECIPE PANEL
 	/////////////////////////////////////////////////////////////////
 }
 

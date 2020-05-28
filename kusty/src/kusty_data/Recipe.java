@@ -1,9 +1,10 @@
 package kusty_data;
 
 import java.util.Map;
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class Recipe {
+public class Recipe implements Serializable{
 	
 	private static int nextRecipeId=1;
 	private int id;

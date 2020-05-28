@@ -14,6 +14,8 @@ public class Kudata {
 	private static String globalIngToKuing;
 	
 	private static JList<String> ingredientsCurrentList;
+	private static JList<String> kuIngredientsCurrentList;
+	private static JList<String> recipesCurrentList;
 	
 	private static List<String> activities = new ArrayList<String>() {{add("Base");add("Loisir");add("Renforcement musculaire");add("Prise de force");add("Endurance");add("Haut-niveau");add("Marathonoien");}};
 	private static Map<String,Float> NAPMap = new HashMap<String,Float>(){{put("Base",(float)1.1);put("Loisir",(float)1.2);put("Renforcement musculaire",(float)1.3);put("Prise de force",(float)1.4);put("Endurance",(float)1.4);put("Haut-niveau",(float)1.5);put("Marathonoien",(float)1.5);}};
@@ -56,6 +58,14 @@ public class Kudata {
 		ingredientsCurrentList = ingJList;
 	}
 	
+	public static void setKuIngredientsCurrentList(JList<String> kuIngJList) {
+		kuIngredientsCurrentList = kuIngJList;
+	}
+	
+	public static void setRecipesCurrentList(JList<String> recJList) {
+		recipesCurrentList = recJList;
+	}
+	
 	
 	
 	
@@ -73,6 +83,14 @@ public class Kudata {
 	
 	public static JList<String> getIngredientsCurrentList(){
 		return ingredientsCurrentList;
+	}
+	
+	public static JList<String> getKuIngredientsCurrentList(){
+		return kuIngredientsCurrentList;
+	}
+	
+	public static JList<String> getRecipesCurrentJList(){
+		return recipesCurrentList;
 	}
 	
 	public static List<String> getActivitiesList(){

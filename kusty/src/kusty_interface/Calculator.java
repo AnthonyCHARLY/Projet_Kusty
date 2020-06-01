@@ -220,8 +220,8 @@ public class Calculator{
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
 				Subject curClient = subSet.get(obj[0][0] + " " + obj[0][1]);
-				for(int i = 0 ; i < Kudata.getalergiesList().size() ; i++) {
-					if(curClient.getAlergies()[i]) { System.out.println(Kudata.getAlergie(i)); }
+				for(int i = 0 ; i < Kudata.getallergiesList().size() ; i++) {
+					if(curClient.getAlergies(Kudata.allAlergies()[i])) { System.out.println(Kudata.getAlergie(i)); }
 				}
 			}
 			
@@ -255,7 +255,8 @@ public class Calculator{
 		JMenuItem item3_2 = new JMenuItem("Base de données globale");
 		JMenuItem item3_3 = new JMenuItem("KuBase de données");
 		
-		JMenuItem item4_1 = new JMenuItem("Base de données Recettes");
+		JMenuItem item4_1 = new JMenuItem("Nouveau");
+		JMenuItem item4_2 = new JMenuItem("Base de données Recettes");
 		
 		
 		button1.add(item1_1);
@@ -559,7 +560,7 @@ public class Calculator{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				KuIngredientPanel(kuIngSet, ingSet);
+				KuIngredientPanel(kuIngSet, ingSet,false);
 			}
 			
 		});
@@ -574,6 +575,25 @@ public class Calculator{
 		//RECIPES DATA BASE
 		/////////////////////////////////////////////////////////////////
 		item4_1.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				NewRecipePanel(ingSet, kuIngSet, recSet, true);
+			}
+			
+		});
+		/////////////////////////////////////////////////////////////////
+		//RECIPES DATA BASE
+		/////////////////////////////////////////////////////////////////
+		
+		
+		
+		button4.add(item4_2);
+		/////////////////////////////////////////////////////////////////
+		//RECIPES DATA BASE
+		/////////////////////////////////////////////////////////////////
+		item4_2.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
@@ -608,7 +628,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	public static void NewClientPanel(JTable tab, JTable tab2, Object[][] obj, Object[][] obj2, Map<String,Subject> subSet, boolean isNewClient) {
 		boolean[] sportPeriod = new boolean[5];
-		boolean[] alergiesRecap = new boolean[Kudata.getalergiesList().size()];
+		boolean[] alergiesRecap = new boolean[Kudata.getallergiesList().size()];
 		boolean[] eatingPeriod = new boolean[5];
 	
 		JFrame clientFrame = new JFrame();
@@ -677,12 +697,14 @@ public class Calculator{
 				JCheckBoxMenuItem al8 = new JCheckBoxMenuItem(Kudata.getAlergie(8));
 				JCheckBoxMenuItem[] items = {al0,al1,al2,al3,al4,al5,al6,al7,al8};
 				
-				for(int i = 0 ; i < Kudata.getalergiesList().size() ; i++) {
+				for(int i = 0 ; i < Kudata.getallergiesList().size() ; i++) {
 					items[i].setSelected(alergiesRecap[i]);
 				}
 				
-				if(!isNewClient) { for(int i = 0 ; i < Kudata.getalergiesList().size() ; i ++) {
-					items[i].setSelected(subSet.get(Kudata.getCurrentClient()).getAlergies()[i]);
+				if(!isNewClient) { for(int i = 0 ; i < Kudata.getallergiesList().size() ; i ++) {
+					if(subSet.get(Kudata.getCurrentClient()).getAlergies(Kudata.allAlergies()[i])) {
+						items[i].setSelected(true);
+					}
 				}}
 				
 				alergiesPanel.add(al0);
@@ -701,11 +723,15 @@ public class Calculator{
 					@Override
 					public void actionPerformed(ActionEvent e) {
 						// TODO Auto-generated method stub
-						for(int i = 0 ; i < Kudata.getalergiesList().size() ; i++) {
+						for(int i = 0 ; i < Kudata.getallergiesList().size() ; i++) {
 							alergiesRecap[i] = items[i].isSelected();
 						}
 						if(!isNewClient) {
-							subSet.get(Kudata.getCurrentClient()).setAlergies(alergiesRecap);
+							for(int i = 0 ; i < Kudata.getallergiesList().size() ; i++) {
+								if(alergiesRecap[i]) {
+									subSet.get(Kudata.getCurrentClient()).addAlergie(Kudata.allAlergies()[i]);
+								}
+							}
 						}
 						clientFrame.setAlwaysOnTop(true);
 						alergiesPanel.setVisible(false);
@@ -821,13 +847,18 @@ public class Calculator{
 				
 				
 				if(isNewClient) {
-					Subject newSubject = new Subject(newName, newFirstname, newWeight, newHeight, newAge, newSex, newActivityType, newMorpho, newProject,newRegime,alergiesRecap);
+					Subject newSubject = new Subject(newName, newFirstname, newWeight, newHeight, newAge, newSex, newActivityType, newMorpho, newProject,newRegime);
+					for(int i = 0 ; i < Kudata.getallergiesList().size() ; i++) {
+						if(alergiesRecap[i]) {
+							newSubject.addAlergie(Kudata.allAlergies()[i]);
+						}
+					}
 					subSet.put(newSubject.getName() + " " + newSubject.getFirstName(), newSubject);
 					Kudata.setCurrentClient(newSubject);
 				}
 				else {
 					Subject sub = subSet.get(Kudata.getCurrentClient());
-					sub.actualizeAllDatas(newName, newFirstname, newWeight, newHeight, newAge, newSex, newActivityType, newMorpho, newProject, newRegime, alergiesRecap);
+					sub.actualizeAllDatas(newName, newFirstname, newWeight, newHeight, newAge, newSex, newActivityType, newMorpho, newProject, newRegime);
 					subSet.remove(Kudata.getCurrentClient());
 					subSet.put(newName + " " + newFirstname, sub);
 					Kudata.setCurrentClient(subSet.get(newName + " " + newFirstname));
@@ -1140,9 +1171,9 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	//KUINGREDIENT PANEL
 	/////////////////////////////////////////////////////////////////
-	public static void KuIngredientPanel(List<String> kuIngSet, Map<String,Ingredient> ingSet) {
+	public static void KuIngredientPanel(List<String> kuIngSet, Map<String,Ingredient> ingSet, boolean isAddRecipe) {
 		JFrame kuIngredientsFrame = new JFrame();
-		kuIngredientsFrame.setSize(600, 800);
+		kuIngredientsFrame.setSize(700, 800);
 		kuIngredientsFrame.setVisible(true);
 		kuIngredientsFrame.setLocationRelativeTo(null);
 		kuIngredientsFrame.setResizable(false);
@@ -1255,7 +1286,7 @@ public class Calculator{
 					// TODO Auto-generated method stub
 					Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
 					kuIngSet.remove(curIng.getName());
-					KuIngredientPanel(kuIngSet,ingSet);
+					KuIngredientPanel(kuIngSet,ingSet,false);
 					kuIngredientsFrame.dispose();
 				}
 				
@@ -1263,6 +1294,109 @@ public class Calculator{
 			/////////////////////////////////////////////////////////////////
 			//DEL KUING
 			/////////////////////////////////////////////////////////////////
+			
+			if(isAddRecipe) {
+				JButton addRecipe = new JButton("Ajouter Ingredient");
+				JButton mainAddRecipe = new JButton("Ajouter Ingredient Principal");
+				JButton ok = new JButton("OK");
+				
+				p3.add(addRecipe);
+				addRecipe.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						JFrame qtyFrame = new JFrame();
+						qtyFrame.setSize(200, 100);
+						qtyFrame.setVisible(true);
+						qtyFrame.setLocationRelativeTo(null);
+						qtyFrame.setResizable(false);
+						qtyFrame.setAlwaysOnTop(true);
+						
+						JPanel qPane = new JPanel();
+						qPane.setLayout(new FlowLayout());
+						
+						JLabel label_1 = new JLabel("Quantité :");
+						JTextField qty = new JTextField();
+						qty.setColumns(3);
+						
+						JButton ok2 = new JButton("OK");
+						ok2.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								// TODO Auto-generated method stub
+								qtyFrame.dispose();
+								Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
+								Kudata.addCurrentRecipeIngredient(curIng.getName(),Float.parseFloat(qty.getText()));
+							}
+							
+						});
+						
+						qPane.add(label_1);
+						qPane.add(qty);
+						qPane.add(ok2);
+						
+						qtyFrame.setContentPane(qPane);
+						
+					}
+					
+				});
+				
+				p3.add(mainAddRecipe);
+				mainAddRecipe.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						JFrame qtyFrame = new JFrame();
+						qtyFrame.setSize(200, 100);
+						qtyFrame.setVisible(true);
+						qtyFrame.setLocationRelativeTo(null);
+						qtyFrame.setResizable(false);
+						qtyFrame.setAlwaysOnTop(true);
+						
+						JPanel qPane = new JPanel();
+						qPane.setLayout(new FlowLayout());
+						
+						JLabel label_1 = new JLabel("Quantité :");
+						JTextField qty = new JTextField();
+						qty.setColumns(3);
+						
+						JButton ok2 = new JButton("OK");
+						ok2.addActionListener(new ActionListener() {
+
+							@Override
+							public void actionPerformed(ActionEvent e) {
+								// TODO Auto-generated method stub
+								qtyFrame.dispose();
+								Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
+								Kudata.addCurrentRecipeMainIngredient(curIng.getName(),Float.parseFloat(qty.getText()));
+							}
+							
+						});
+						
+						qPane.add(label_1);
+						qPane.add(qty);
+						qPane.add(ok2);
+						
+						qtyFrame.setContentPane(qPane);
+						
+					}
+					
+				});
+				
+				p3.add(ok);
+				ok.addActionListener(new ActionListener() {
+
+					@Override
+					public void actionPerformed(ActionEvent e) {
+						// TODO Auto-generated method stub
+						kuIngredientsFrame.dispose();
+					}
+					
+				});
+			}
 			
 			kuIngredientPanel.add(p1);
 			kuIngredientPanel.add(p2);
@@ -1285,6 +1419,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	@SuppressWarnings("deprecation")
 	public static void IngredientsReader(String path, Map<String,Ingredient> ingSet) throws IOException {
+		ingSet.clear();
 		FileInputStream fileIn = new FileInputStream(new File(path));
 		Workbook workbook = new XSSFWorkbook(fileIn);
 		Sheet dataSheet = workbook.getSheetAt(2);
@@ -1302,7 +1437,7 @@ public class Calculator{
 				}
 			}
 			
-			Ingredient newIng = new Ingredient(dataRow[0],dataRow[1],Float.valueOf(dataRow[2]),Float.valueOf(dataRow[3]),Float.valueOf(dataRow[4]),Float.valueOf(dataRow[5]),Float.valueOf(dataRow[6]),Float.valueOf(dataRow[7]),Float.valueOf(dataRow[8]),Float.valueOf(dataRow[9]),Float.valueOf(dataRow[10]),0);
+			Ingredient newIng = new Ingredient(dataRow[0],dataRow[1],Kudata.allAlergies()[0],Float.valueOf(dataRow[2]),Float.valueOf(dataRow[3]),Float.valueOf(dataRow[4]),Float.valueOf(dataRow[5]),Float.valueOf(dataRow[6]),Float.valueOf(dataRow[7]),Float.valueOf(dataRow[8]),Float.valueOf(dataRow[9]),Float.valueOf(dataRow[10]),0);
 			ingSet.put(dataRow[1], newIng);
 				
 		}
@@ -1350,8 +1485,18 @@ public class Calculator{
 		for(String s : species) { speciesNames[i] = s; i++; }
 		JComboBox speciesBox = new JComboBox(speciesNames);
 		
+		
+		List<String> allergenes = new ArrayList<String>();
+		for(String s : Kudata.getallergiesList()) { allergenes.add(s); }
+		String[] allergenesNames = new String[allergenes.size()];
+		int j = 0;
+		for(String s : allergenes) { allergenesNames[j] = s; j++; }
+		JComboBox allergenesBox = new JComboBox(allergenesNames);
+		
+		
 		JTextField name = new JTextField();
 		name.setColumns(25);
+		
 		
 		JTextField price = new JTextField();
 		price.setColumns(3);
@@ -1435,6 +1580,8 @@ public class Calculator{
 				
 				String newName = name.getText();
 				
+				String newAllergene = "bonjours";
+				
 				float newPrice = Float.parseFloat(price.getText());
 				
 				float newProt = Float.parseFloat(prot.getText());
@@ -1456,19 +1603,16 @@ public class Calculator{
 				float newEReg = Float.parseFloat(eReg.getText());
 				
 				if(!isNewIngredient) {
-					ingSet.get(Kudata.getGlobalIngToKuing()).actualizeAllDatas(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
+					ingSet.get(Kudata.getGlobalIngToKuing()).actualizeAllDatas(newSpecies, newName, newAllergene, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
 					if(!isModification) {
 						kuIngSet.add(newName);
 					}
 				}
 				else {
-					Ingredient curIng = new Ingredient(newSpecies, newName, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
+					Ingredient curIng = new Ingredient(newSpecies, newName, newAllergene, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
 					ingSet.put(newName, curIng);
 					kuIngSet.add(newName);
 				}
-				System.out.println(newName);
-				System.out.println("" + kuIngSet.size());
-				System.out.println("" + ingSet.size());
 				kuingFrame.dispose();
 			}
 			
@@ -1482,6 +1626,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	//KUING ADD PANEL
 	/////////////////////////////////////////////////////////////////
+	
 	
 	
 	
@@ -1506,6 +1651,7 @@ public class Calculator{
 			int i = 0;
 			for(Recipe recipe : recSet.values()) { recipes[i] = recipe.getName(); i++;}
 			JList<String> recipesNames = new JList<String>(recipes);
+			Kudata.setRecipesCurrentList(recipesNames);
 			JPanel p1 = new JPanel();
 			p1.setLayout(new BorderLayout());
 			JScrollPane pane = new JScrollPane(recipesNames);
@@ -1518,22 +1664,16 @@ public class Calculator{
 		JPanel p2 = new JPanel();
 		p2.setLayout(new FlowLayout());
 			
-		JButton nouveau = new JButton("Nouveau");
 		JButton supr = new JButton("Supprimer");
 		JButton modifier = new JButton("Modifier");
-
-		p2.add(nouveau);
-		nouveau.addActionListener(new ActionListener(){
-
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				NewRecipePanel(ingSet,kuIngSet,recSet,true);
-			}
 		
-		});
+		
+		
 		
 		p2.add(supr);
+		/////////////////////////////////////////////////////////////////
+		//DELETE RECIPE
+		/////////////////////////////////////////////////////////////////
 		supr.addActionListener(new ActionListener() {
 
 			@Override
@@ -1546,17 +1686,35 @@ public class Calculator{
 			}
 			
 		});
+		/////////////////////////////////////////////////////////////////
+		//DELETE RECIPE
+		/////////////////////////////////////////////////////////////////
+		
+		
+		
+		
 		
 		p2.add(modifier);
+		/////////////////////////////////////////////////////////////////
+		//MOD RECIPE
+		/////////////////////////////////////////////////////////////////
 		modifier.addActionListener(new ActionListener() {
 
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				Kudata.setCurrentRecipe(Kudata.getRecipesCurrentJList().getSelectedValue());
+				for(String s : recSet.get(Kudata.getCurrentRecipe()).getIngredients().keySet()) { Kudata.addCurrentRecipeIngredient(s, recSet.get(Kudata.getCurrentRecipe()).getIngredients().get(s)); }
+				for(String s : recSet.get(Kudata.getCurrentRecipe()).getMainIngredients().keySet()) { Kudata.addCurrentRecipeMainIngredient(s, recSet.get(Kudata.getCurrentRecipe()).getMainIngredients().get(s)); }
 				NewRecipePanel(ingSet,kuIngSet,recSet,false);
 			}
 			
 		});
+		/////////////////////////////////////////////////////////////////
+		//MOD RECIPE
+		/////////////////////////////////////////////////////////////////
+		
+		
 		
 		recipePanel.add(p2);
 		
@@ -1569,15 +1727,162 @@ public class Calculator{
 	
 	
 	
-	
 	/////////////////////////////////////////////////////////////////
-	//NEW RECIPE PANEL
+	//NEW RECIPE
 	/////////////////////////////////////////////////////////////////
-	public static void NewRecipePanel(Map<String,Ingredient> ingSet, List<String> kuIngSet, Map<String,Recipe> recSet, boolean isNewRecipe) {
+	public static void NewRecipePanel(Map<String,Ingredient> ingSet, List<String> kuIngSet, Map<String,Recipe> recSet,boolean isNewRecipe) {
+		// TODO Auto-generated method stub
+		JFrame newRecipeFrame = new JFrame();
+		newRecipeFrame.setTitle("Nouvelle Recettes");
+		newRecipeFrame.setSize(500,200);
+		newRecipeFrame.setLocationRelativeTo(null);
+		newRecipeFrame.setResizable(false);
+		newRecipeFrame.setAlwaysOnTop(true);
+		newRecipeFrame.setVisible(true);
 		
+		JPanel newRecipePanel = new JPanel();
+		newRecipePanel.setLayout(new FlowLayout());
+		
+		JLabel label_1 = new JLabel("Nom :");
+		JLabel label_2 = new JLabel("Prix :");
+		JLabel label_3 = new JLabel("Cout :");
+		
+		JTextField name = new JTextField();
+		name.setColumns(15);
+		
+		JTextField price = new JTextField();
+		price.setColumns(5);
+		
+		JTextField cost = new JTextField();
+		cost.setColumns(5);
+		cost.setText("" + 0);
+		cost.setEditable(false);
+		
+		JButton ingList = new JButton("Ingredients");
+		
+		if(!isNewRecipe) {
+			for(String s : recSet.get(Kudata.getCurrentRecipe()).getIngredients().keySet()) {
+				Kudata.addCurrentRecipeIngredient(s,recSet.get(Kudata.getCurrentRecipe()).getIngredients().get(s));
+				}
+			for(String s : recSet.get(Kudata.getCurrentRecipe()).getMainIngredients().keySet()) { Kudata.addCurrentRecipeMainIngredient(s,recSet.get(Kudata.getCurrentRecipe()).getMainIngredients().get(s)); }
+			name.setText(Kudata.getCurrentRecipe());
+			price.setText("" + recSet.get(Kudata.getCurrentRecipe()).getPrice());
+			float c = 0;
+			if(Kudata.getCurrentRecipeIngredients().size() > 0) {
+				for(String s : Kudata.getCurrentRecipeIngredients().keySet()) { c += ingSet.get(s).getPrize()*Kudata.getCurrentRecipeIngredients().get(s); }
+			}
+			if(Kudata.getCurrentRecipeMainIngredients().size() > 0) {
+				for(String s : Kudata.getCurrentRecipeMainIngredients().keySet()) { c += ingSet.get(s).getPrize()*Kudata.getCurrentRecipeMainIngredients().get(s); }
+			}
+			cost.setText("" + c);
+		}
+		
+		newRecipePanel.add(label_1);
+		newRecipePanel.add(name);
+		newRecipePanel.add(label_2);
+		newRecipePanel.add(price);
+		newRecipePanel.add(label_3);
+		newRecipePanel.add(cost);
+		newRecipePanel.add(ingList);
+		ingList.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JFrame ingredientsFrame = new JFrame();
+				ingredientsFrame.setSize(250, 350);
+				ingredientsFrame.setVisible(true);
+				ingredientsFrame.setLocationRelativeTo(null);
+				ingredientsFrame.setResizable(false);
+				ingredientsFrame.setAlwaysOnTop(true);
+				
+				if(Kudata.getCurrentRecipeIngredients().size() + Kudata.getCurrentRecipeMainIngredients().size() > 0) {
+					
+					JPanel ingPanel = new JPanel();
+					ingPanel.setLayout(new BorderLayout());
+					
+					String ingredients[] = new String[Kudata.getCurrentRecipeIngredients().size() + Kudata.getCurrentRecipeMainIngredients().size()];
+					int i = 0;
+					for(String ingredient : Kudata.getCurrentRecipeIngredients().keySet()) { ingredients[i] = ingredient; i++; }
+					for(String ingredient : Kudata.getCurrentRecipeMainIngredients().keySet()) { ingredients[i] = ingredient; i++; }
+					JList<String> ingredientsNames = new JList<String>(ingredients);
+					JScrollPane pane = new JScrollPane(ingredientsNames);
+					ingPanel.add(pane);
+					ingredientsFrame.setContentPane(ingPanel);
+				}
+			}
+			
+		});
+		
+		JButton mainIngList = new JButton("Ingredients Principaux");
+		mainIngList.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				JFrame ingredientsFrame = new JFrame();
+				ingredientsFrame.setSize(250, 350);
+				ingredientsFrame.setVisible(true);
+				ingredientsFrame.setLocationRelativeTo(null);
+				ingredientsFrame.setResizable(false);
+				ingredientsFrame.setAlwaysOnTop(true);
+				
+				if(Kudata.getCurrentRecipeMainIngredients().size() > 0) {
+					
+					JPanel ingPanel = new JPanel();
+					ingPanel.setLayout(new BorderLayout());
+					
+					String ingredients[] = new String[Kudata.getCurrentRecipeMainIngredients().size()];
+					int i = 0;
+					for(String ingredient : Kudata.getCurrentRecipeMainIngredients().keySet()) { ingredients[i] = ingredient; i++; }
+					JList<String> ingredientsNames = new JList<String>(ingredients);
+					JScrollPane pane = new JScrollPane(ingredientsNames);
+					ingPanel.add(pane);
+					ingredientsFrame.setContentPane(ingPanel);
+				}
+			}
+			
+		});
+		
+		JButton addIngredient = new JButton("Ajouter Ingredients");
+		JButton ok = new JButton("OK");
+		
+		
+		newRecipePanel.add(addIngredient);
+		addIngredient.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				KuIngredientPanel(kuIngSet,ingSet,true);
+			}
+			
+		});
+		
+		
+		newRecipePanel.add(ok);
+		ok.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				String newName = name.getText();
+				float newPrice = Float.parseFloat(price.getText());
+				Recipe newRecipe = new Recipe(newName,newPrice);
+				for(String s : Kudata.getCurrentRecipeIngredients().keySet()) { newRecipe.addIngredient(s, Kudata.getCurrentRecipeIngredients().get(s));}
+				for(String s : Kudata.getCurrentRecipeMainIngredients().keySet()) { newRecipe.addMainIngredient(s, Kudata.getCurrentRecipeMainIngredients().get(s));}
+				recSet.put(newName, newRecipe);
+				Kudata.clearCurrentRecipeIngredients();
+				Kudata.clearCurrentRecipeMainIngredient();
+				newRecipeFrame.dispose();
+			}
+			
+		});
+		
+		newRecipeFrame.setContentPane(newRecipePanel);
 	}
 	/////////////////////////////////////////////////////////////////
-	//NEW RECIPE PANEL
+	//NEW RECIPE
 	/////////////////////////////////////////////////////////////////
 }
 

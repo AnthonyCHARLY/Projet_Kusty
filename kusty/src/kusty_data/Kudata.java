@@ -11,11 +11,14 @@ public class Kudata {
 	
 	private static String localPath;
 	private static String currentClient;
+	private static String currentRecipe;
 	private static String globalIngToKuing;
 	
 	private static JList<String> ingredientsCurrentList;
 	private static JList<String> kuIngredientsCurrentList;
 	private static JList<String> recipesCurrentList;
+	private static Map<String,Float> currentRecipeIngredients = new HashMap<String,Float>();
+	private static Map<String,Float> currentRecipeMainIngredients = new HashMap<String,Float>();
 	
 	private static List<String> activities = new ArrayList<String>() {{add("Base");add("Loisir");add("Renforcement musculaire");add("Prise de force");add("Endurance");add("Haut-niveau");add("Marathonoien");}};
 	private static Map<String,Float> NAPMap = new HashMap<String,Float>(){{put("Base",(float)1.1);put("Loisir",(float)1.2);put("Renforcement musculaire",(float)1.3);put("Prise de force",(float)1.4);put("Endurance",(float)1.4);put("Haut-niveau",(float)1.5);put("Marathonoien",(float)1.5);}};
@@ -34,7 +37,7 @@ public class Kudata {
 	private static Float[] n3 = {(float) 40,(float) 35,(float) 25};
 	private static Map<String,Float[]> morMap = new HashMap<String,Float[]>() {{put("N1",n1);put("N2",n2);put("N3",n3);}};
 	
-	private static List<String> alergies = new ArrayList<String>() {{add("Aucune");add("Cacahuète");add("Amandes");add("Noix");add("Noix de cajou");add("Noisette");add("Pistache");add("Lactose");add("Gluten");}};
+	private static List<String> alergies = new ArrayList<String>() {{add("Aucune");add("Arachide");add("Fruits à coque");add("Crustacés");add("Poisson");add("Soja");add("Oeuf");add("Lactose");add("Gluten");}};
 	
 	private static List<String> projects = new ArrayList<String>() {{add("Alimentation equilibré");add("Perte de poids");add("Perte de poids avancé");add("prise de muscle");add("Prise de muscle avancé");}};
 	
@@ -50,6 +53,10 @@ public class Kudata {
 		currentClient = sub.getName() + " " + sub.getFirstName();
 	}
 	
+	public static void setCurrentRecipe(String recipe) {
+		currentRecipe = recipe;
+	}
+	
 	public static void setGlobalIngToKuing(Ingredient ing) {
 		globalIngToKuing = ing.getName();
 	}
@@ -61,9 +68,25 @@ public class Kudata {
 	public static void setKuIngredientsCurrentList(JList<String> kuIngJList) {
 		kuIngredientsCurrentList = kuIngJList;
 	}
-	
+
 	public static void setRecipesCurrentList(JList<String> recJList) {
 		recipesCurrentList = recJList;
+	}
+	
+	public static void addCurrentRecipeIngredient(String ingredient, float q) {
+		currentRecipeIngredients.put(ingredient,q);
+	}
+	
+	public static void clearCurrentRecipeIngredients() {
+		currentRecipeIngredients.clear();
+	}
+	
+	public static void addCurrentRecipeMainIngredient(String ingredient,float q) {
+		currentRecipeMainIngredients.put(ingredient,q);
+	}
+	
+	public static void clearCurrentRecipeMainIngredient() {
+		currentRecipeMainIngredients.clear();
 	}
 	
 	
@@ -75,6 +98,10 @@ public class Kudata {
 	
 	public static String getCurrentClient() {
 		return currentClient;
+	}
+	
+	public static String getCurrentRecipe() {
+		return currentRecipe;
 	}
 	
 	public static String getGlobalIngToKuing() {
@@ -93,6 +120,14 @@ public class Kudata {
 		return recipesCurrentList;
 	}
 	
+	public static Map<String,Float> getCurrentRecipeIngredients(){
+		return currentRecipeIngredients;
+	}
+	
+	public static Map<String,Float> getCurrentRecipeMainIngredients(){
+		return currentRecipeMainIngredients;
+	}
+	
 	public static List<String> getActivitiesList(){
 		return activities;
 	}
@@ -101,7 +136,7 @@ public class Kudata {
 		return morphos;
 	}
 	
-	public static List<String> getalergiesList(){
+	public static List<String> getallergiesList(){
 		return alergies;
 	}
 	

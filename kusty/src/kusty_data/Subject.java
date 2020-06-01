@@ -1,6 +1,8 @@
 package kusty_data;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 public class Subject implements Serializable{
@@ -20,7 +22,7 @@ public class Subject implements Serializable{
 	private int morpho;
 	private int regime;
 	
-	private boolean[] alergies;
+	private List<String> alergies = new ArrayList<String>();
 	private boolean[] sportPeriodes;
 	private boolean[] feedPeriodes;
 	
@@ -32,7 +34,7 @@ public class Subject implements Serializable{
 	
 	
 	public Subject(String name, String firstName, int weight, int height, int age, boolean sex, int activity,
-			int morpho, int project, int regime, boolean[] alergies) {
+			int morpho, int project, int regime) {
 		super();
 		
 		this.id = Subject.nextSubjectId++;
@@ -49,8 +51,6 @@ public class Subject implements Serializable{
 		this.morpho = morpho;
 		this.project = project;
 		this.regime = regime;
-		
-		this.alergies = alergies;
 		
 		Map<String,Float> map = Kudata.getNAPMap();
 		String[] keys = Kudata.allActivities();
@@ -90,7 +90,7 @@ public class Subject implements Serializable{
 	
 	
 	public void actualizeAllDatas(String name, String firstName, int weight, int height, int age, boolean sex, int activity,
-			int morpho, int project, int regime, boolean[] alergies) {
+			int morpho, int project, int regime) {
 		this.name = name;
 		
 		this.firstName = firstName;
@@ -104,8 +104,6 @@ public class Subject implements Serializable{
 		this.morpho = morpho;
 		this.project = project;
 		this.regime = regime;
-		
-		this.alergies = alergies;
 		
 		Map<String,Float> map = Kudata.getNAPMap();
 		String[] keys = Kudata.allActivities();
@@ -202,8 +200,8 @@ public class Subject implements Serializable{
 		return regime;
 	}
 	
-	public boolean[] getAlergies() {
-		return alergies;
+	public boolean getAlergies(String s) {
+		return alergies.contains(s);
 	}
 	
 	public boolean[] getSportPeriodes() {
@@ -271,17 +269,14 @@ public class Subject implements Serializable{
 		this.regime = i;
 	}
 	
-	public void addAlergie(int a) {
-		alergies[a] = true;
+	public void addAlergie(String a) {
+		alergies.add(a);
 	}
 	
 	public void removeAlergie(int a) {
-		alergies[a] = false;
+		alergies.remove(a);
 	}
 	
-	public void setAlergies(boolean[] alergies) {
-		this.alergies = alergies;
-	}
 	
 	public void addSportPeriode(int p) {
 		sportPeriodes[p] = true;

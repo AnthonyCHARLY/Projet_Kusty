@@ -204,6 +204,10 @@ public class Subject implements Serializable{
 		return alergies.contains(s);
 	}
 	
+	public List<String> getAllAllergies(){
+		return alergies;
+	}
+	
 	public boolean[] getSportPeriodes() {
 		return sportPeriodes;
 	}

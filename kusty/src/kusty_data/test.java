@@ -24,7 +24,7 @@ public class test {
 		l.add("bonjoyr");
 		l.add("bonjoue");
 		
-		String search  = "bonjo";
+		String search  = "bonj";
 		int cm = search.length();
 		for(String s : l) {
 			int count = search.length();

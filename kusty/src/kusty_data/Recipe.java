@@ -25,6 +25,7 @@ public class Recipe implements Serializable{
 		this.periodes = new boolean[5];
 		this.cost = 0;
 	}
+	
 
 
 	public int getId() {

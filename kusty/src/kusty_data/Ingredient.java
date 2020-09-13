@@ -12,6 +12,7 @@ public class Ingredient implements Serializable{
 	private String species;
 	private String allergene;
 	private float prize;
+	private String unit;
 	private float proteins;
 	private float carbohydrates;
 	private float lipids;
@@ -25,7 +26,7 @@ public class Ingredient implements Serializable{
 	
 
 	public Ingredient(String species, String name, String allergene, float eReg, float proteins, float carbohydrates, float lipids, float sugars,
-			float dietaryFiber, float agSat, float agMonoInsat, float agPolyInsat, float prize) {
+			float dietaryFiber, float agSat, float agMonoInsat, float agPolyInsat, float prize, String unit) {
 		super();
 		this.id = Ingredient.nextIngredientId++;
 		
@@ -33,6 +34,7 @@ public class Ingredient implements Serializable{
 		this.species = species;
 		this.allergene = allergene;
 		this.prize = prize;
+		this.unit = unit;
 		this.proteins = proteins;
 		this.carbohydrates = carbohydrates;
 		this.lipids = lipids;
@@ -47,12 +49,13 @@ public class Ingredient implements Serializable{
 	
 	
 	public void actualizeAllDatas(String species, String name, String allergene, float eReg, float proteins, float carbohydrates, float lipids, float sugars,
-			float dietaryFiber, float agSat, float agMonoInsat, float agPolyInsat, float prize) {
+			float dietaryFiber, float agSat, float agMonoInsat, float agPolyInsat, float prize, String unit) {
 		
 		this.name = name;
 		this.species = species;
 		this.allergene = allergene;
 		this.prize = prize;
+		this.unit = unit;
 		this.proteins = proteins;
 		this.carbohydrates = carbohydrates;
 		this.lipids = lipids;
@@ -85,6 +88,11 @@ public class Ingredient implements Serializable{
 	
 	public float getPrize() {
 		return prize;
+	}
+	
+	
+	public String getUnit() {
+		return unit;
 	}
 
 
@@ -147,6 +155,11 @@ public class Ingredient implements Serializable{
 	
 	public void setPrize(float prize) {
 		this.prize = prize;
+	}
+	
+	
+	public void setUnit(String unit) {
+		this.unit = unit;
 	}
 
 

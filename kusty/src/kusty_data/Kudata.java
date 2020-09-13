@@ -43,6 +43,8 @@ public class Kudata {
 	
 	private static List<String> regimes = new ArrayList<String>() {{add("aucun");add("Végétarien");add("Vegan");}};
 	
+	private static List<String> units = new ArrayList<String>() {{add("kg");add("g");add("l");add("cl");add("p");}};
+	
 	
 	
 	public static void setLocalPath(String newLocalPath) {
@@ -148,6 +150,10 @@ public class Kudata {
 		return regimes;
 	}
 	
+	public static List<String> getUnitsList(){
+		return units;
+	}
+	
 	public static String getActivities(int i){
 		return activities.get(i);
 	}
@@ -188,6 +194,10 @@ public class Kudata {
 		return regimes.get(i);
 	}
 	
+	public static String getUnit(int i) {
+		return units.get(i);
+	}
+	
 	public static Map<String,Float> getNAPMap(){
 		return NAPMap;
 	}
@@ -224,6 +234,13 @@ public class Kudata {
 		String l[] = new String[regimes.size()];
 		int i = 0;
 		for(String s : regimes) { l[i]=s; i++; }
+		return l;
+	}
+	
+	public static String[] allUnits() {
+		String l[] = new String[units.size()];
+		int i = 0;
+		for(String s : units) { l[i]=s; i++; }
 		return l;
 	}
 	

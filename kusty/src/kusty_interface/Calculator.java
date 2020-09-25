@@ -559,7 +559,7 @@ public class Calculator{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				KuIngredientPanel(kuIngSet, ingSet,false);
+				KuIngredientPanel(kuIngSet, ingSet,false,null);
 			}
 			
 		});
@@ -1184,7 +1184,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	//KUINGREDIENT PANEL
 	/////////////////////////////////////////////////////////////////
-	public static void KuIngredientPanel(List<String> kuIngSet, Map<String,Ingredient> ingSet, boolean isAddRecipe) {
+	public static void KuIngredientPanel(List<String> kuIngSet, Map<String,Ingredient> ingSet, boolean isAddRecipe, JTextField cost) {
 		JFrame kuIngredientsFrame = new JFrame();
 		kuIngredientsFrame.setSize(700, 800);
 		kuIngredientsFrame.setVisible(true);
@@ -1326,7 +1326,7 @@ public class Calculator{
 					// TODO Auto-generated method stub
 					Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
 					kuIngSet.remove(curIng.getName());
-					KuIngredientPanel(kuIngSet,ingSet,false);
+					KuIngredientPanel(kuIngSet,ingSet,false,null);
 					kuIngredientsFrame.dispose();
 				}
 				
@@ -1374,6 +1374,9 @@ public class Calculator{
 								qtyFrame.dispose();
 								Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
 								Kudata.addCurrentRecipeIngredient(curIng.getName(),Float.parseFloat(qty.getText()));
+								cost.setVisible(false);
+								actualizeRecipePrize(cost, true, curIng, Float.parseFloat(qty.getText()));
+								cost.setVisible(true);
 							}
 							
 						});
@@ -1409,6 +1412,8 @@ public class Calculator{
 						JTextField qty = new JTextField();
 						qty.setColumns(3);
 						
+						JLabel label_2 = new JLabel(ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue()).getUnit());
+						
 						JButton ok2 = new JButton("OK");
 						ok2.addActionListener(new ActionListener() {
 
@@ -1418,12 +1423,14 @@ public class Calculator{
 								qtyFrame.dispose();
 								Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
 								Kudata.addCurrentRecipeMainIngredient(curIng.getName(),Float.parseFloat(qty.getText()));
+								
 							}
 							
 						});
 						
 						qPane.add(label_1);
 						qPane.add(qty);
+						qPane.add(label_2);
 						qPane.add(ok2);
 						
 						qtyFrame.setContentPane(qPane);
@@ -1673,7 +1680,7 @@ public class Calculator{
 					Ingredient curIng = new Ingredient(newSpecies, newName, newAllergene, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice, newUnit);
 					ingSet.put(newName, curIng);
 					kuIngSet.add(newName);
-					KuIngredientPanel(kuIngSet,ingSet,false);
+					KuIngredientPanel(kuIngSet,ingSet,false,null);
 				}
 				kuingFrame.dispose();
 			}
@@ -1785,6 +1792,7 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	//RECIPE DATABASE
 	/////////////////////////////////////////////////////////////////
+	
 	
 	
 	
@@ -1914,7 +1922,7 @@ public class Calculator{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
-				KuIngredientPanel(kuIngSet,ingSet,true);
+				KuIngredientPanel(kuIngSet,ingSet,true,cost);
 				newRecipeFrame.revalidate();
 			}
 			
@@ -1944,6 +1952,25 @@ public class Calculator{
 	}
 	/////////////////////////////////////////////////////////////////
 	//NEW RECIPE
+	/////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////
+	//ACTU RECIPE PRIZE
+	/////////////////////////////////////////////////////////////////
+	public static void actualizeRecipePrize(JTextField cost, boolean isAddorDel, Ingredient ing, Float quantity) {
+		if(isAddorDel) {
+			Float newPrice = Float.parseFloat(cost.getText()) + ing.getPrize()*quantity;
+			cost.setText("" + newPrice);  
+		}
+		else {
+			cost.setText("" + (Float.parseFloat(cost.getText()) - ing.getPrize()*quantity)); 
+		}
+	}
+	/////////////////////////////////////////////////////////////////
+	//ACTU RECIPE PRIZE
 	/////////////////////////////////////////////////////////////////
 }
 

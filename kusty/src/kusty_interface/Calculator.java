@@ -15,6 +15,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -143,7 +144,7 @@ public class Calculator{
 		
 		JFrame kulcalculator = new JFrame();
 		kulcalculator.setTitle("KulCalculator");
-		kulcalculator.setSize(1500,500);
+		kulcalculator.setSize(1500,1000);
 		//kulcalculator.pack();
 		//kulcalculator.setDefaultLookAndFeelDecorated(true);
 		//kulcalculator.setExtendedState(kulcalculator.MAXIMIZED_BOTH);
@@ -152,7 +153,7 @@ public class Calculator{
 		kulcalculator.setResizable(false);
 		GridLayout gl = new GridLayout();
 		gl.setColumns(1);
-		gl.setRows(4);
+		gl.setRows(5);
 		kulcalculator.setLayout(gl);
 		JMenuBar menu = new JMenuBar();
 		
@@ -165,7 +166,6 @@ public class Calculator{
 		
 		JTable tab = new JTable(obj,titles);
 		
-		tab.setVisible(false);
 		tab.setEnabled(false);
 		tab.getTableHeader().setEnabled(false);
 		JPanel p1 = new JPanel();
@@ -184,13 +184,67 @@ public class Calculator{
 		final Object obj2[][] = {{"","","","","",""}};
 		
 		JTable tab2 = new JTable(obj2, titles2);
-		tab2.setVisible(false);
 		tab2.setEnabled(false);
 		tab2.getTableHeader().setEnabled(false);
 		JPanel p3 = new JPanel();
 		p3.setLayout(new BorderLayout());
 		p3.add(new JScrollPane(tab2));
 		kulcalculator.getContentPane().add(p3);
+		
+		
+		JPanel p4 = new JPanel();
+		GridLayout gl4 = new GridLayout(17,6);
+		p4.setLayout(gl4);
+		
+		kulcalculator.getContentPane().add(p4);
+		
+		JLabel label1 = new JLabel("Repas :");
+		JCheckBoxMenuItem pd = new JCheckBoxMenuItem("Petit-dejeuner");
+		JCheckBoxMenuItem c1 = new JCheckBoxMenuItem("Collotion matin");
+		JCheckBoxMenuItem dj = new JCheckBoxMenuItem("Dejeuner");
+		JCheckBoxMenuItem c2 = new JCheckBoxMenuItem("Collation Aprés-midi");
+		JCheckBoxMenuItem dn = new JCheckBoxMenuItem("Diner");
+		JCheckBoxMenuItem[] feedMomentsItems = {pd,c1,dj,c2,dn};
+		
+		for(int i = 0 ; i < feedMomentsItems.length ; i++) {
+			feedMomentsItems[i].setSelected(true);
+		}
+		
+		JLabel label2 = new JLabel("Sport :");
+		JCheckBoxMenuItem apd = new JCheckBoxMenuItem("Avant petit-dejeuner");
+		JCheckBoxMenuItem ac1 = new JCheckBoxMenuItem("Avant collotion matin");
+		JCheckBoxMenuItem adj = new JCheckBoxMenuItem("Avant Dejeuner");
+		JCheckBoxMenuItem ac2 = new JCheckBoxMenuItem("Avant collation Aprés-midi");
+		JCheckBoxMenuItem adn = new JCheckBoxMenuItem("Avant Diner");
+		JCheckBoxMenuItem[] sportMomentsItems = {apd,ac1,adj,ac2,adn};
+		
+		JButton needsRepartition = new JButton("Répartition");
+		
+		p4.add(label1);
+		p4.add(pd);
+		p4.add(c1);
+		p4.add(dj);
+		p4.add(c2);
+		p4.add(dn);
+		
+		p4.add(label2);
+		p4.add(apd);
+		p4.add(ac1);
+		p4.add(adj);
+		p4.add(ac2);
+		p4.add(adn);
+		
+		
+		String titles3[] = {"Besoins","Petit-dejeuner","Collation-matin","Dejeuner","Collation apres-midi","Diner"};
+		final Object obj3[][] = {{"Proteines","","","","","",},{"Lipides","","","","","",},{"Glucides","","","","","",}};
+		
+		JTable tab3 = new JTable(obj3, titles3);
+		tab3.setEnabled(false);
+		tab3.getTableHeader().setEnabled(false);
+		JPanel p5 = new JPanel();
+		p5.setLayout(new BorderLayout());
+		p5.add(new JScrollPane(tab3));
+		kulcalculator.getContentPane().add(p5);
 		
 		
 		p2.add(modifier);
@@ -228,6 +282,26 @@ public class Calculator{
 		/////////////////////////////////////////////////////////////////
 		//CLIENT ALERGIES
 		/////////////////////////////////////////////////////////////////
+		
+		
+		
+		p4.add(needsRepartition);
+		/////////////////////////////////////////////////////////////////
+		//FEED NEEDS REPARTITION
+		/////////////////////////////////////////////////////////////////
+		needsRepartition.addActionListener(new ActionListener() {
+
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				// TODO Auto-generated method stub
+				actualizeFeedRepartition(subSet,feedMomentsItems, sportMomentsItems,obj3,tab3);
+			}
+			
+		});
+		/////////////////////////////////////////////////////////////////
+		//FEED NEEDS REPARTITION
+		/////////////////////////////////////////////////////////////////
+		
 		
 		
 		/////////////////////////////////////////////////////////////////
@@ -749,60 +823,6 @@ public class Calculator{
 			}
 			
 		});
-		
-		JButton sportPeriods = new JButton("Périodes de sport");
-		sportPeriods.addActionListener(new ActionListener() {
-			
-			@Override
-			public void actionPerformed(ActionEvent e) {
-				// TODO Auto-generated method stub
-				JFrame sportPeriods = new JFrame();
-				sportPeriods.setTitle("Selection périodes");
-				sportPeriods.setSize(500,100);
-				sportPeriods.setLocationRelativeTo(null);
-				sportPeriods.setResizable(false);
-				clientFrame.setAlwaysOnTop(false);
-				sportPeriods.setAlwaysOnTop(true);
-				sportPeriods.setVisible(true);
-				sportPeriods.setLayout(new FlowLayout(FlowLayout.LEADING));
-		
-		
-				JCheckBoxMenuItem apd = new JCheckBoxMenuItem("Avant petit-dejeuner");
-				JCheckBoxMenuItem ac1 = new JCheckBoxMenuItem("Avant collotion 1");
-				JCheckBoxMenuItem adj = new JCheckBoxMenuItem("Avant dejeuner");
-				JCheckBoxMenuItem ac2 = new JCheckBoxMenuItem("Avant collation 2");
-				JCheckBoxMenuItem adn = new JCheckBoxMenuItem("Avant diner");
-				JCheckBoxMenuItem[] items = {apd,ac1,adj,ac2,adn};
-				
-				for(int i = 0 ; i < 5 ; i++) {
-					items[i].setSelected(sportPeriod[i]);
-				}
-				
-				sportPeriods.add(apd);
-				sportPeriods.add(ac1);
-				sportPeriods.add(adj);
-				sportPeriods.add(ac2);
-				sportPeriods.add(adn);
-		
-				JButton ok = new JButton("OK");
-				ok.addActionListener(new ActionListener() {
-			
-					@Override
-					public void actionPerformed(ActionEvent e) {
-						// TODO Auto-generated method stub
-						for(int i = 0 ; i < 5 ; i++) {
-							sportPeriod[i] = items[i].isSelected();
-						}
-						clientFrame.setAlwaysOnTop(true);
-						sportPeriods.setVisible(false);
-						sportPeriods.dispose();
-					}
-				});
-				
-				sportPeriods.add(ok);
-			}
-			
-		});
 	
 		String sexs[] = {"Homme","Femme"};
 		JComboBox sex = new JComboBox(sexs);
@@ -907,7 +927,6 @@ public class Calculator{
 		clientPanel.add(height);
 		clientPanel.add(label_5);
 		clientPanel.add(age);
-		clientPanel.add(sportPeriods);
 		clientPanel.add(alergies);
 		clientPanel.add(label_6);
 		clientPanel.add(sex);
@@ -1971,6 +1990,64 @@ public class Calculator{
 	}
 	/////////////////////////////////////////////////////////////////
 	//ACTU RECIPE PRIZE
+	/////////////////////////////////////////////////////////////////
+	
+	
+	
+	
+	
+	/////////////////////////////////////////////////////////////////
+	//FEEDS REPARTITION
+	/////////////////////////////////////////////////////////////////
+	@SuppressWarnings("deprecation")
+	public static void actualizeFeedRepartition(Map<String,Subject> subSet, JCheckBoxMenuItem[] feedMoments,JCheckBoxMenuItem[] sportMoments, Object[][] obj, JTable tab) {
+		
+		tab.setVisible(false);
+		
+		float protNeeds = subSet.get(Kudata.getCurrentClient()).getProteinsNeeds();
+		float lipNeeds = subSet.get(Kudata.getCurrentClient()).getLipidesNeeds();
+		float glucNeeds = subSet.get(Kudata.getCurrentClient()).getGlucidesNeeds();
+		
+		obj[0][1] = 0.25;
+		obj[0][2] = 0.125;
+		obj[0][3] = 0.25;
+		obj[0][4] = 0.125;
+		obj[0][5] = 0.25;
+		obj[1][1] = 0.25;
+		obj[1][2] = 0.125;
+		obj[1][3] = 0.25;
+		obj[1][4] = 0.125;
+		obj[1][5] = 0.25;
+		obj[2][1] = 0.30;
+		obj[2][2] = 0.10;
+		obj[2][3] = 0.30;
+		obj[2][4] = 0.10;
+		obj[2][5] = 0.20;
+		
+		for(int i = 0 ; i < 3 ; i++) {
+			for(int j = 1 ; j < 6 ; j++) {
+				if(sportMoments[j-1].isSelected()) {
+					obj[i][j] = (double)obj[i][j]+0.05;
+					if(j-1<4) {
+						obj[i][j+1] = (double)obj[i][j]-0.05;
+					}
+				}
+				if(i == 0) {
+					obj[i][j] = (Double)obj[i][j]*protNeeds;
+				}
+				if(i == 1) {
+					obj[i][j] = (Double)obj[i][j]*lipNeeds;
+				}
+				if(i == 2) {
+					obj[i][j] = (Double)obj[i][j]*glucNeeds;
+				}
+			}
+		}
+		
+		tab.setVisible(true);
+	}
+	/////////////////////////////////////////////////////////////////
+	//FEED REPARTITION
 	/////////////////////////////////////////////////////////////////
 }
 

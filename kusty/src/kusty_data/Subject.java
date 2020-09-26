@@ -23,8 +23,6 @@ public class Subject implements Serializable{
 	private int regime;
 	
 	private List<String> alergies = new ArrayList<String>();
-	private boolean[] sportPeriodes;
-	private boolean[] feedPeriodes;
 	
 	private float energieNeeds;
 	private float proteinsNeeds;
@@ -74,8 +72,6 @@ public class Subject implements Serializable{
 		
 		
 		
-		this.sportPeriodes = new boolean[5];
-		this.feedPeriodes = new boolean[5];
 		
 		Map<String,Float[]> actMap = Kudata.getActMap();
 		Map<String,Float[]> morMap = Kudata.getMorMap();
@@ -127,8 +123,6 @@ public class Subject implements Serializable{
 		
 		
 		
-		this.sportPeriodes = new boolean[5];
-		this.feedPeriodes = new boolean[5];
 		
 		Map<String,Float[]> actMap = Kudata.getActMap();
 		Map<String,Float[]> morMap = Kudata.getMorMap();
@@ -208,15 +202,6 @@ public class Subject implements Serializable{
 		return alergies;
 	}
 	
-	public boolean[] getSportPeriodes() {
-		return sportPeriodes;
-	}
-	
-	
-	public boolean[] getFeedPeriodes() {
-		return feedPeriodes;
-	}
-	
 	
 	public float getEnergieNeeds() {
 		return energieNeeds;
@@ -279,26 +264,6 @@ public class Subject implements Serializable{
 	
 	public void removeAlergie(int a) {
 		alergies.remove(a);
-	}
-	
-	
-	public void addSportPeriode(int p) {
-		sportPeriodes[p] = true;
-	}
-	
-	
-	public void removeSportPeriode(int p) {
-		sportPeriodes[p] = false;
-	}
-	
-	
-	public void addFeedPeriode(int p) {
-		feedPeriodes[p] = true;
-	}
-	
-	
-	public void removeFeedPeriode(int p) {
-		feedPeriodes[p] = false;
 	}
 	
 	public void setEnergieNeeds() {

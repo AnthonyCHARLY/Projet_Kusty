@@ -43,7 +43,7 @@ public class Kudata {
 	
 	private static List<String> regimes = new ArrayList<String>() {{add("aucun");add("Végétarien");add("Vegan");}};
 	
-	private static List<String> units = new ArrayList<String>() {{add("kg");add("g");add("l");add("cl");add("p");}};
+	private static List<String> units = new ArrayList<String>() {{add("Unité");add("kg");add("g");add("l");add("cl");add("p");}};
 	
 	
 	

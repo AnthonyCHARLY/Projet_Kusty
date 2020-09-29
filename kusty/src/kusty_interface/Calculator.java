@@ -144,10 +144,10 @@ public class Calculator{
 		
 		JFrame kulcalculator = new JFrame();
 		kulcalculator.setTitle("KulCalculator");
-		kulcalculator.setSize(1500,1000);
-		//kulcalculator.pack();
-		//kulcalculator.setDefaultLookAndFeelDecorated(true);
-		//kulcalculator.setExtendedState(kulcalculator.MAXIMIZED_BOTH);
+		//kulcalculator.setSize(1500,1000);
+		kulcalculator.pack();
+		kulcalculator.setDefaultLookAndFeelDecorated(true);
+		kulcalculator.setExtendedState(kulcalculator.MAXIMIZED_BOTH);
 		kulcalculator.setLocationRelativeTo(null);
 		kulcalculator.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		kulcalculator.setResizable(false);
@@ -1442,6 +1442,9 @@ public class Calculator{
 								qtyFrame.dispose();
 								Ingredient curIng = ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue());
 								Kudata.addCurrentRecipeMainIngredient(curIng.getName(),Float.parseFloat(qty.getText()));
+								cost.setVisible(false);
+								actualizeRecipePrize(cost, true, curIng, Float.parseFloat(qty.getText()));
+								cost.setVisible(true);
 								
 							}
 							
@@ -2024,22 +2027,99 @@ public class Calculator{
 		obj[2][4] = 0.10;
 		obj[2][5] = 0.20;
 		
+		//CORIGER
+		
+		List<Integer> collationfeedlist = new ArrayList<Integer>();
+		List<Integer> mealfeedlist = new ArrayList<Integer>();
+		
+		for(int j = 0 ; j < 5 ; j++) {
+			if(feedMoments[j].isSelected()) {
+					if(j == 0 || j == 2 || j == 4) {
+						mealfeedlist.add(j);
+					}
+					else {
+						collationfeedlist.add(j);
+					}
+			}
+		}
+		System.out.println("" + collationfeedlist.size());
+		switch(collationfeedlist.size()) {
+		case 0:
+			for(int i = 0 ; i < 3 ; i++) {
+				double save = 0;
+				for(int j = 1 ; j < 5 ; j = j+2) {
+					save = save + (double)obj[i][j+1];
+				}
+				for(int j : mealfeedlist) {
+					obj[i][j+1] = (double)obj[i][j+1] + save/mealfeedlist.size();
+				}
+			}
+			break;
+		
+		case 1:
+			int k = 0;
+			int l = 0;
+			if(feedMoments[3].isSelected()) {
+				k = 4;
+				l = 2;
+			}
+			if(feedMoments[1].isSelected()){
+				k = 2;
+				l = 4;
+			}
+			for(int i = 0 ; i< 3 ; i++) {
+				obj[i][k] = (double)obj[i][k] + (double)obj[i][l];
+			}
+			break;
+		
+		default:
+			break;
+		}
+		
+		if(mealfeedlist.size() != 3) {
+			for(int i = 0 ; i < 3 ; i++) {
+				double save = 0;
+				for(int j = 0 ; j < 5 ; j = j+2) {
+					if(!feedMoments[j].isSelected()) {
+						save = save + (double)obj[i][j+1];
+					}
+				}
+				for(int j = 0 ; j < 5 ; j = j + 2) {
+					obj[i][j+1] = (double)obj[i][j+1] + save/mealfeedlist.size();
+				}
+			}
+		}
+			
 		for(int i = 0 ; i < 3 ; i++) {
 			for(int j = 1 ; j < 6 ; j++) {
+				
+				if(!feedMoments[j-1].isSelected()) {	
+					obj[i][j] = 0.0;
+				}
+				
+				
+				
 				if(sportMoments[j-1].isSelected()) {
-					obj[i][j] = (double)obj[i][j]+0.05;
 					if(j-1<4) {
-						obj[i][j+1] = (double)obj[i][j]-0.05;
+						if((double)obj[i][j+1] != 0) {
+							obj[i][j+1] = (double)obj[i][j+1]-0.05;
+						}
+						else {
+							if(j-1<3) {
+								obj[i][j+1] = (double)obj[i][j+1]-0.05;
+							}
+						}
+						obj[i][j] = (double)obj[i][j]+0.05;
 					}
 				}
 				if(i == 0) {
-					obj[i][j] = (Double)obj[i][j]*protNeeds;
+					obj[i][j] = (double)obj[i][j]*protNeeds;
 				}
 				if(i == 1) {
-					obj[i][j] = (Double)obj[i][j]*lipNeeds;
+					obj[i][j] = (double)obj[i][j]*lipNeeds;
 				}
 				if(i == 2) {
-					obj[i][j] = (Double)obj[i][j]*glucNeeds;
+					obj[i][j] = (double)obj[i][j]*glucNeeds;
 				}
 			}
 		}

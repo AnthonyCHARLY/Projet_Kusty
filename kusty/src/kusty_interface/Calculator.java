@@ -294,6 +294,11 @@ public class Calculator{
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				// TODO Auto-generated method stub
+				for(int i = 0 ; i < 5 ; i++) {
+					if(sportMomentsItems[i].isSelected()) {
+						feedMomentsItems[i].setSelected(true);
+					}
+				}
 				actualizeFeedRepartition(subSet,feedMomentsItems, sportMomentsItems,obj3,tab3);
 			}
 			
@@ -1382,7 +1387,7 @@ public class Calculator{
 						JTextField qty = new JTextField();
 						qty.setColumns(3);
 						
-						JLabel label_2 = new JLabel(ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue()).getUnit());
+						JLabel label_2 = new JLabel("g");
 						
 						JButton ok2 = new JButton("OK");
 						ok2.addActionListener(new ActionListener() {
@@ -1431,7 +1436,7 @@ public class Calculator{
 						JTextField qty = new JTextField();
 						qty.setColumns(3);
 						
-						JLabel label_2 = new JLabel(ingSet.get(Kudata.getKuIngredientsCurrentList().getSelectedValue()).getUnit());
+						JLabel label_2 = new JLabel("g");
 						
 						JButton ok2 = new JButton("OK");
 						ok2.addActionListener(new ActionListener() {
@@ -1515,7 +1520,7 @@ public class Calculator{
 				}
 			}
 			
-			Ingredient newIng = new Ingredient(dataRow[0],dataRow[1],Kudata.allAlergies()[0],Float.valueOf(dataRow[2]),Float.valueOf(dataRow[3]),Float.valueOf(dataRow[4]),Float.valueOf(dataRow[5]),Float.valueOf(dataRow[6]),Float.valueOf(dataRow[7]),Float.valueOf(dataRow[8]),Float.valueOf(dataRow[9]),Float.valueOf(dataRow[10]),0,"Unité");
+			Ingredient newIng = new Ingredient(dataRow[0],dataRow[1],Kudata.allAlergies()[0],Float.valueOf(dataRow[2]),Float.valueOf(dataRow[3]),Float.valueOf(dataRow[4]),Float.valueOf(dataRow[5]),Float.valueOf(dataRow[6]),Float.valueOf(dataRow[7]),Float.valueOf(dataRow[8]),Float.valueOf(dataRow[9]),Float.valueOf(dataRow[10]),0);
 			ingSet.put(dataRow[1], newIng);
 				
 		}
@@ -1579,12 +1584,7 @@ public class Calculator{
 		JTextField price = new JTextField();
 		price.setColumns(3);
 		
-		List<String> units = new ArrayList<String>();
-		for(String s : Kudata.getUnitsList()) { units.add(s); }
-		String[] unitsNames = new String[units.size()];
-		int k = 0;
-		for(String s : units) { unitsNames[k] = s; k++; }
-		JComboBox unitsBox = new JComboBox(unitsNames);
+		JLabel unit = new JLabel("/100g");
 	
 		JTextField prot = new JTextField();
 		prot.setColumns(3);
@@ -1618,7 +1618,6 @@ public class Calculator{
 			name.setText(Kudata.getGlobalIngToKuing());
 			speciesBox.setSelectedIndex(species.indexOf(curIng.getSpecies()));
 			price.setText("" + curIng.getPrize());
-			unitsBox.setSelectedIndex(units.indexOf(curIng.getUnit()));
 			prot.setText("" + curIng.getProteins());
 			gluc.setText("" + curIng.getCarbohydrates());
 			lip.setText("" + curIng.getLipids());
@@ -1636,7 +1635,7 @@ public class Calculator{
 		kuingPanel.add(allergenesBox);
 		kuingPanel.add(label_2);
 		kuingPanel.add(price);
-		kuingPanel.add(unitsBox);
+		kuingPanel.add(unit);
 		kuingPanel.add(label_3);
 		kuingPanel.add(prot);
 		kuingPanel.add(label_4);
@@ -1672,8 +1671,6 @@ public class Calculator{
 				
 				float newPrice = Float.parseFloat(price.getText());
 				
-				String newUnit = (String)unitsBox.getSelectedItem();
-				
 				float newProt = Float.parseFloat(prot.getText());
 				
 				float newGluc = Float.parseFloat(gluc.getText());
@@ -1693,13 +1690,13 @@ public class Calculator{
 				float newEReg = Float.parseFloat(eReg.getText());
 				
 				if(!isNewIngredient) {
-					ingSet.get(Kudata.getGlobalIngToKuing()).actualizeAllDatas(newSpecies, newName, newAllergene, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice, newUnit);
+					ingSet.get(Kudata.getGlobalIngToKuing()).actualizeAllDatas(newSpecies, newName, newAllergene, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
 					if(!isModification) {
 						kuIngSet.add(newName);
 					}
 				}
 				else {
-					Ingredient curIng = new Ingredient(newSpecies, newName, newAllergene, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice, newUnit);
+					Ingredient curIng = new Ingredient(newSpecies, newName, newAllergene, newEReg, newProt, newGluc, newLip, newSucres, newFibAl, newAgSat, newAgMono, newAgPoly, newPrice);
 					ingSet.put(newName, curIng);
 					kuIngSet.add(newName);
 					KuIngredientPanel(kuIngSet,ingSet,false,null);
@@ -1740,7 +1737,21 @@ public class Calculator{
 		
 			String recipes[] = new String[recSet.size()];
 			int i = 0;
-			for(Recipe recipe : recSet.values()) { recipes[i] = recipe.getName(); i++;}
+			for(Recipe recipe : recSet.values()) { 
+				float kal = 0;
+				float prot = 0;
+				float lip = 0;
+				float gluc = 0;
+				for(String s : recipe.getIngredients().keySet()) {
+					kal += kal + ingSet.get(s).getEReg()*(recipe.getIngredients().get(s)/100);
+					prot += prot + ingSet.get(s).getProteins()*(recipe.getIngredients().get(s)/100);
+					lip += lip + ingSet.get(s).getLipids()*(recipe.getIngredients().get(s)/100);
+					gluc += gluc + ingSet.get(s).getCarbohydrates()*(recipe.getIngredients().get(s)/100);
+				}
+				recipes[i] = recipe.getName() + " | kal : " + kal + " | prot : " + prot + " | lip : " + lip + " | gluc : " + gluc ; 
+				i++;
+			}
+			
 			JList<String> recipesNames = new JList<String>(recipes);
 			Kudata.setRecipesCurrentList(recipesNames);
 			JPanel p1 = new JPanel();
@@ -1984,11 +1995,11 @@ public class Calculator{
 	/////////////////////////////////////////////////////////////////
 	public static void actualizeRecipePrize(JTextField cost, boolean isAddorDel, Ingredient ing, Float quantity) {
 		if(isAddorDel) {
-			Float newPrice = Float.parseFloat(cost.getText()) + ing.getPrize()*quantity;
+			Float newPrice = Float.parseFloat(cost.getText()) + ing.getPrize()*(quantity/100);
 			cost.setText("" + newPrice);  
 		}
 		else {
-			cost.setText("" + (Float.parseFloat(cost.getText()) - ing.getPrize()*quantity)); 
+			cost.setText("" + (Float.parseFloat(cost.getText()) - ing.getPrize()*(quantity/100))); 
 		}
 	}
 	/////////////////////////////////////////////////////////////////
@@ -2042,7 +2053,6 @@ public class Calculator{
 					}
 			}
 		}
-		System.out.println("" + collationfeedlist.size());
 		switch(collationfeedlist.size()) {
 		case 0:
 			for(int i = 0 ; i < 3 ; i++) {
